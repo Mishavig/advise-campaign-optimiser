@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -154,10 +155,17 @@ const Index = () => {
 
         {/* Recommendations */}
         <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <Zap className="w-5 h-5 text-accent" />
-            AI Recommendations
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              <Zap className="w-5 h-5 text-accent" />
+              AI Recommendations
+            </h2>
+            <Link to="/insights">
+              <Button variant="outline" size="sm">
+                View Detailed Insights <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
+          </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {mockRecommendations.map((rec) => (
               <Card key={rec.id} className="shadow-card hover:shadow-elevated transition-all duration-300">
