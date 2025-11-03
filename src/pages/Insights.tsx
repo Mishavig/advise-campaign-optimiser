@@ -66,16 +66,23 @@ const placementData = [
   { placement: "Audience Network", impressions: 9700, ctr: 2.5, conversions: 15 },
 ];
 
-const COLORS = {
-  primary: "hsl(var(--primary))",
-  accent: "hsl(var(--accent))",
-  success: "hsl(var(--success))",
-  warning: "hsl(var(--warning))",
-  muted: "hsl(var(--muted))",
-  chart1: "hsl(217, 91%, 60%)",
-  chart2: "hsl(142, 76%, 36%)",
-  chart3: "hsl(262, 83%, 58%)",
-  chart4: "hsl(30, 100%, 50%)",
+const chartConfig = {
+  impressions: {
+    label: "Impressions",
+    color: "hsl(217, 91%, 60%)",
+  },
+  clicks: {
+    label: "Clicks",
+    color: "hsl(142, 76%, 36%)",
+  },
+  conversions: {
+    label: "Conversions",
+    color: "hsl(var(--accent))",
+  },
+  spend: {
+    label: "Spend",
+    color: "hsl(262, 83%, 58%)",
+  },
 };
 
 const Insights = () => {
@@ -162,20 +169,18 @@ const Insights = () => {
                   <CardDescription>Impressions, clicks, and conversions breakdown</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={audienceByAge}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                        <XAxis dataKey="age" stroke="hsl(var(--muted-foreground))" />
-                        <YAxis stroke="hsl(var(--muted-foreground))" />
-                        <ChartTooltip content={<ChartTooltipContent />} />
-                        <Legend />
-                        <Bar dataKey="impressions" fill={COLORS.chart1} name="Impressions" />
-                        <Bar dataKey="clicks" fill={COLORS.chart2} name="Clicks" />
-                        <Bar dataKey="conversions" fill={COLORS.accent} name="Conversions" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
+                  <ChartContainer config={chartConfig} className="h-[300px]">
+                    <BarChart data={audienceByAge}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="age" stroke="hsl(var(--muted-foreground))" />
+                      <YAxis stroke="hsl(var(--muted-foreground))" />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Legend />
+                      <Bar dataKey="impressions" fill="hsl(217, 91%, 60%)" name="Impressions" />
+                      <Bar dataKey="clicks" fill="hsl(142, 76%, 36%)" name="Clicks" />
+                      <Bar dataKey="conversions" fill="hsl(var(--accent))" name="Conversions" />
+                    </BarChart>
+                  </ChartContainer>
                 </CardContent>
               </Card>
 
@@ -186,25 +191,23 @@ const Insights = () => {
                   <CardDescription>Gender distribution and engagement</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-[300px] flex items-center justify-center">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={audienceByGender}
-                          dataKey="impressions"
-                          nameKey="gender"
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={100}
-                          label={(entry) => `${entry.gender}: ${((entry.impressions / 99400) * 100).toFixed(1)}%`}
-                        >
-                          <Cell fill={COLORS.chart1} />
-                          <Cell fill={COLORS.chart3} />
-                        </Pie>
-                        <ChartTooltip content={<ChartTooltipContent />} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
+                  <ChartContainer config={chartConfig} className="h-[300px]">
+                    <PieChart>
+                      <Pie
+                        data={audienceByGender}
+                        dataKey="impressions"
+                        nameKey="gender"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        label={(entry) => `${entry.gender}: ${((entry.impressions / 99400) * 100).toFixed(1)}%`}
+                      >
+                        <Cell fill="hsl(217, 91%, 60%)" />
+                        <Cell fill="hsl(262, 83%, 58%)" />
+                      </Pie>
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                    </PieChart>
+                  </ChartContainer>
                 </CardContent>
               </Card>
             </div>
@@ -273,7 +276,7 @@ const Insights = () => {
                           style={{
                             width: `${device.value}%`,
                             background:
-                              idx === 0 ? COLORS.chart1 : idx === 1 ? COLORS.chart2 : COLORS.chart3,
+                              idx === 0 ? "hsl(217, 91%, 60%)" : idx === 1 ? "hsl(142, 76%, 36%)" : "hsl(262, 83%, 58%)",
                           }}
                         />
                       </div>
@@ -292,19 +295,17 @@ const Insights = () => {
                 <CardDescription>Compare metrics across different ad creatives</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[400px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={creativePerformance} layout="vertical">
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" width={100} />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Legend />
-                      <Bar dataKey="conversions" fill={COLORS.accent} name="Conversions" />
-                      <Bar dataKey="clicks" fill={COLORS.chart1} name="Clicks" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+                <ChartContainer config={chartConfig} className="h-[400px]">
+                  <BarChart data={creativePerformance} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" width={100} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Bar dataKey="conversions" fill="hsl(var(--accent))" name="Conversions" />
+                    <Bar dataKey="clicks" fill="hsl(217, 91%, 60%)" name="Clicks" />
+                  </BarChart>
+                </ChartContainer>
               </CardContent>
             </Card>
 
@@ -352,38 +353,36 @@ const Insights = () => {
                 <CardDescription>Daily trends for key metrics</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[400px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={timeSeriesData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis stroke="hsl(var(--muted-foreground))" />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Legend />
-                      <Line
-                        type="monotone"
-                        dataKey="impressions"
-                        stroke={COLORS.chart1}
-                        strokeWidth={2}
-                        name="Impressions"
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="clicks"
-                        stroke={COLORS.chart2}
-                        strokeWidth={2}
-                        name="Clicks"
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="conversions"
-                        stroke={COLORS.accent}
-                        strokeWidth={2}
-                        name="Conversions"
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
+                <ChartContainer config={chartConfig} className="h-[400px]">
+                  <LineChart data={timeSeriesData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis stroke="hsl(var(--muted-foreground))" />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="impressions"
+                      stroke="hsl(217, 91%, 60%)"
+                      strokeWidth={2}
+                      name="Impressions"
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="clicks"
+                      stroke="hsl(142, 76%, 36%)"
+                      strokeWidth={2}
+                      name="Clicks"
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="conversions"
+                      stroke="hsl(var(--accent))"
+                      strokeWidth={2}
+                      name="Conversions"
+                    />
+                  </LineChart>
+                </ChartContainer>
               </CardContent>
             </Card>
 
@@ -393,17 +392,15 @@ const Insights = () => {
                 <CardDescription>Daily spend analysis</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={timeSeriesData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis stroke="hsl(var(--muted-foreground))" />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="spend" fill={COLORS.warning} name="Daily Spend (₪)" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+                <ChartContainer config={chartConfig} className="h-[300px]">
+                  <BarChart data={timeSeriesData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis stroke="hsl(var(--muted-foreground))" />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar dataKey="spend" fill="hsl(var(--warning))" name="Daily Spend (₪)" />
+                  </BarChart>
+                </ChartContainer>
               </CardContent>
             </Card>
           </TabsContent>
@@ -416,19 +413,17 @@ const Insights = () => {
                 <CardDescription>Compare results across Facebook placements</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[400px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={placementData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="placement" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis stroke="hsl(var(--muted-foreground))" />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Legend />
-                      <Bar dataKey="impressions" fill={COLORS.chart1} name="Impressions" />
-                      <Bar dataKey="conversions" fill={COLORS.accent} name="Conversions" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+                <ChartContainer config={chartConfig} className="h-[400px]">
+                  <BarChart data={placementData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="placement" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis stroke="hsl(var(--muted-foreground))" />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Bar dataKey="impressions" fill="hsl(217, 91%, 60%)" name="Impressions" />
+                    <Bar dataKey="conversions" fill="hsl(var(--accent))" name="Conversions" />
+                  </BarChart>
+                </ChartContainer>
               </CardContent>
             </Card>
 
