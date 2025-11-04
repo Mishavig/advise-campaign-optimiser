@@ -161,9 +161,14 @@ const Index = () => {
               AI Recommendations
             </h2>
             <div className="flex gap-2">
+              <Link to="/dashboard">
+                <Button variant="outline" size="sm">
+                  View Dashboard <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              </Link>
               <Link to="/insights">
                 <Button variant="outline" size="sm">
-                  View Detailed Insights <ChevronRight className="w-4 h-4 ml-1" />
+                  Detailed Insights <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
               <Link to="/recommendations">
