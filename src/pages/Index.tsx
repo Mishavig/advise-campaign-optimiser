@@ -160,11 +160,18 @@ const Index = () => {
               <Zap className="w-5 h-5 text-accent" />
               AI Recommendations
             </h2>
-            <Link to="/insights">
-              <Button variant="outline" size="sm">
-                View Detailed Insights <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
+            <div className="flex gap-2">
+              <Link to="/insights">
+                <Button variant="outline" size="sm">
+                  View Detailed Insights <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              </Link>
+              <Link to="/recommendations">
+                <Button variant="default" size="sm">
+                  All Recommendations <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              </Link>
+            </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {mockRecommendations.map((rec) => (
