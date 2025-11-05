@@ -134,10 +134,32 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Campaign Intelligence Platform</p>
               </div>
             </div>
-            <Button>
-              <Target className="w-4 h-4 mr-2" />
-              Connect Facebook
-            </Button>
+            <div className="flex gap-2">
+              <Link to="/dashboard">
+                <Button variant="outline" size="sm">
+                  Dashboard
+                </Button>
+              </Link>
+              <Link to="/campaigns">
+                <Button variant="outline" size="sm">
+                  Campaigns
+                </Button>
+              </Link>
+              <Link to="/insights">
+                <Button variant="outline" size="sm">
+                  Insights
+                </Button>
+              </Link>
+              <Link to="/recommendations">
+                <Button variant="outline" size="sm">
+                  Recommendations
+                </Button>
+              </Link>
+              <Button>
+                <Target className="w-4 h-4 mr-2" />
+                Connect Facebook
+              </Button>
+            </div>
           </div>
         </div>
       </header>

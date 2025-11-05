@@ -215,6 +215,11 @@ const Dashboard = () => {
                 </SelectContent>
               </Select>
               <div className="flex gap-2">
+                <Link to="/campaigns">
+                  <Button variant="outline" size="sm">
+                    Campaigns
+                  </Button>
+                </Link>
                 <Link to="/insights">
                   <Button variant="outline" size="sm">
                     Insights
