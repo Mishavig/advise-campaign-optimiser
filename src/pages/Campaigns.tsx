@@ -16,6 +16,9 @@ import {
   Play,
   Pause,
   ChevronLeft,
+  BarChart3,
+  Target,
+  LineChart,
 } from "lucide-react";
 import CampaignHierarchy from "@/components/CampaignHierarchy";
 
@@ -184,35 +187,47 @@ const Campaigns = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="flex flex-col gap-4">
+      {/* Header */}
+      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link to="/">
-                <Button variant="ghost" size="sm">
-                  <ChevronLeft className="w-4 h-4 mr-1" />
-                  Back
-                </Button>
-              </Link>
-              <div>
-                <h1 className="text-3xl font-bold">Campaigns</h1>
-                <p className="text-muted-foreground">Manage and monitor all your advertising campaigns</p>
+            <Link to="/" className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-white" />
               </div>
-            </div>
-            <div className="flex gap-2">
+              <div>
+                <h1 className="text-2xl font-bold">AD-ViSOR</h1>
+                <p className="text-sm text-muted-foreground">Campaign Intelligence Platform</p>
+              </div>
+            </Link>
+            <div className="flex items-center gap-2">
               <Link to="/dashboard">
                 <Button variant="outline" size="sm">Dashboard</Button>
               </Link>
               <Link to="/insights">
                 <Button variant="outline" size="sm">Insights</Button>
               </Link>
-              <Button>Create Campaign</Button>
+              <Link to="/recommendations">
+                <Button variant="outline" size="sm">Recommendations</Button>
+              </Link>
+              <Button>
+                <Target className="w-4 h-4 mr-2" />
+                Create Campaign
+              </Button>
             </div>
           </div>
+        </div>
+      </header>
 
-          {/* Filters */}
-          <Card>
+      <div className="container mx-auto p-6 space-y-6">
+        {/* Page Title */}
+        <div className="flex flex-col gap-2">
+          <h2 className="text-3xl font-bold">Campaign Management</h2>
+          <p className="text-muted-foreground">Monitor and optimize all your advertising campaigns</p>
+        </div>
+
+        {/* Filters */}
+        <Card>
             <CardContent className="p-4">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1 relative">
@@ -261,8 +276,7 @@ const Campaigns = () => {
                 </Select>
               </div>
             </CardContent>
-          </Card>
-        </div>
+        </Card>
 
         {/* Campaign Views */}
         <Tabs defaultValue="table" className="space-y-4">
@@ -289,6 +303,7 @@ const Campaigns = () => {
                       <TableHead className="text-right">CTR</TableHead>
                       <TableHead className="text-right">ROAS</TableHead>
                       <TableHead>Performance</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -303,6 +318,14 @@ const Campaigns = () => {
                         <TableCell className="text-right">{campaign.ctr.toFixed(2)}%</TableCell>
                         <TableCell className="text-right">{campaign.roas.toFixed(1)}x</TableCell>
                         <TableCell>{getPerformanceBadge(campaign.performance)}</TableCell>
+                        <TableCell className="text-right">
+                          <Link to="/insights">
+                            <Button size="sm" variant="outline">
+                              <LineChart className="w-4 h-4 mr-1" />
+                              Analyze
+                            </Button>
+                          </Link>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
