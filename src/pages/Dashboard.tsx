@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   ChevronRight,
   TrendingUp,
@@ -23,6 +24,12 @@ import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Cart
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 // Mock data
+const mockAdAccounts = [
+  { id: "1", name: "Main Account", businessName: "Acme Corp" },
+  { id: "2", name: "Secondary Account", businessName: "Tech Startup" },
+  { id: "3", name: "Client Account", businessName: "Fashion Brand" },
+];
+
 const mockCampaigns = [
   {
     id: "1",
@@ -123,6 +130,7 @@ const chartConfig = {
 
 const Dashboard = () => {
   const [timeRange, setTimeRange] = useState("7d");
+  const [selectedAccount, setSelectedAccount] = useState("1");
 
   // Calculate totals
   const totalMetrics = mockCampaigns.reduce(
@@ -190,17 +198,34 @@ const Dashboard = () => {
                 </div>
               </Link>
             </div>
-            <div className="flex gap-2">
-              <Link to="/insights">
-                <Button variant="outline" size="sm">
-                  Insights
-                </Button>
-              </Link>
-              <Link to="/recommendations">
-                <Button variant="outline" size="sm">
-                  Recommendations
-                </Button>
-              </Link>
+            <div className="flex items-center gap-3">
+              <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {mockAdAccounts.map((account) => (
+                    <SelectItem key={account.id} value={account.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{account.name}</span>
+                        <span className="text-xs text-muted-foreground">{account.businessName}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="flex gap-2">
+                <Link to="/insights">
+                  <Button variant="outline" size="sm">
+                    Insights
+                  </Button>
+                </Link>
+                <Link to="/recommendations">
+                  <Button variant="outline" size="sm">
+                    Recommendations
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
