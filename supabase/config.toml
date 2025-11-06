@@ -1,0 +1,4 @@
+project_id = "tsuhutcjyjrebkakjfvb"
+
+[functions.analyze-campaign]
+verify_jwt = false

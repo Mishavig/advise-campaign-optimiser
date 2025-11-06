@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Search,
   ArrowUpDown,
@@ -19,6 +22,10 @@ import {
   BarChart3,
   Target,
   LineChart,
+  Sparkles,
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
 } from "lucide-react";
 import CampaignHierarchy from "@/components/CampaignHierarchy";
 
@@ -140,6 +147,12 @@ const Campaigns = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [performanceFilter, setPerformanceFilter] = useState("all");
   const [sortBy, setSortBy] = useState("name");
+  const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
+  const [analysisOpen, setAnalysisOpen] = useState(false);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [analysisData, setAnalysisData] = useState<any>(null);
+  const [analysisMode, setAnalysisMode] = useState<"full" | "short">("full");
+  const { toast } = useToast();
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -184,6 +197,47 @@ const Campaigns = () => {
       if (sortBy === "roas") return b.roas - a.roas;
       return 0;
     });
+
+  const handleAnalyzeCampaign = async (campaign: any) => {
+    setSelectedCampaign(campaign);
+    setAnalysisOpen(true);
+    setAnalysisLoading(true);
+    setAnalysisData(null);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-campaign', {
+        body: { campaign, mode: analysisMode }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.error) {
+        toast({
+          title: "Analysis Failed",
+          description: data.error,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setAnalysisData(data.analysis);
+      toast({
+        title: "Analysis Complete",
+        description: "AI has analyzed your campaign performance",
+      });
+    } catch (error) {
+      console.error('Analysis error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to analyze campaign. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setAnalysisLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -319,12 +373,14 @@ const Campaigns = () => {
                         <TableCell className="text-right">{campaign.roas.toFixed(1)}x</TableCell>
                         <TableCell>{getPerformanceBadge(campaign.performance)}</TableCell>
                         <TableCell className="text-right">
-                          <Link to="/insights">
-                            <Button size="sm" variant="outline">
-                              <LineChart className="w-4 h-4 mr-1" />
-                              Analyze
-                            </Button>
-                          </Link>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleAnalyzeCampaign(campaign)}
+                          >
+                            <Sparkles className="w-4 h-4 mr-1" />
+                            Analyze with AI
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -339,6 +395,169 @@ const Campaigns = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* AI Analysis Dialog */}
+      <Dialog open={analysisOpen} onOpenChange={setAnalysisOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              AI Campaign Analysis: {selectedCampaign?.name}
+            </DialogTitle>
+            <DialogDescription>
+              Advanced AI insights and optimization recommendations
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* Analysis Mode Selector */}
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant={analysisMode === "full" ? "default" : "outline"}
+                onClick={() => setAnalysisMode("full")}
+                disabled={analysisLoading}
+              >
+                Full Analysis
+              </Button>
+              <Button
+                size="sm"
+                variant={analysisMode === "short" ? "default" : "outline"}
+                onClick={() => setAnalysisMode("short")}
+                disabled={analysisLoading}
+              >
+                Quick Summary
+              </Button>
+              {!analysisLoading && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleAnalyzeCampaign(selectedCampaign)}
+                  className="ml-auto"
+                >
+                  <Sparkles className="w-4 h-4 mr-1" />
+                  Re-analyze
+                </Button>
+              )}
+            </div>
+
+            {/* Loading State */}
+            {analysisLoading && (
+              <Card className="p-8">
+                <div className="flex flex-col items-center justify-center gap-4">
+                  <Loader2 className="w-12 h-12 animate-spin text-primary" />
+                  <p className="text-lg font-medium">Analyzing campaign performance...</p>
+                  <p className="text-sm text-muted-foreground">AI is processing your campaign data</p>
+                </div>
+              </Card>
+            )}
+
+            {/* Analysis Results */}
+            {!analysisLoading && analysisData && (
+              <div className="space-y-4">
+                {/* Summary */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Executive Summary</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">{analysisData.summary}</p>
+                    {analysisData.predicted_roas_improvement && (
+                      <div className="mt-4 p-3 bg-primary/10 rounded-lg">
+                        <p className="text-sm font-medium">
+                          Predicted ROAS Improvement: <span className="text-primary text-lg">{analysisData.predicted_roas_improvement}</span>
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Insights */}
+                {analysisData.insights && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Key Insights</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {analysisData.insights.strengths?.length > 0 && (
+                        <div>
+                          <h4 className="font-medium text-green-600 mb-2 flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4" />
+                            Strengths
+                          </h4>
+                          <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-6">
+                            {analysisData.insights.strengths.map((strength: string, idx: number) => (
+                              <li key={idx}>{strength}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {analysisData.insights.weaknesses?.length > 0 && (
+                        <div>
+                          <h4 className="font-medium text-orange-600 mb-2 flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4" />
+                            Areas for Improvement
+                          </h4>
+                          <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-6">
+                            {analysisData.insights.weaknesses.map((weakness: string, idx: number) => (
+                              <li key={idx}>{weakness}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {analysisData.insights.opportunities?.length > 0 && (
+                        <div>
+                          <h4 className="font-medium text-blue-600 mb-2 flex items-center gap-2">
+                            <TrendingUp className="w-4 h-4" />
+                            Opportunities
+                          </h4>
+                          <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-6">
+                            {analysisData.insights.opportunities.map((opportunity: string, idx: number) => (
+                              <li key={idx}>{opportunity}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Recommendations */}
+                {analysisData.recommendations?.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Action Recommendations</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {analysisData.recommendations.map((rec: any, idx: number) => (
+                          <div key={idx} className="p-4 border rounded-lg space-y-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <h5 className="font-medium">{rec.action}</h5>
+                              <Badge variant={
+                                rec.priority === "high" ? "destructive" :
+                                rec.priority === "medium" ? "default" :
+                                "secondary"
+                              }>
+                                {rec.priority}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground"><strong>Target:</strong> {rec.target}</p>
+                            <p className="text-sm text-muted-foreground"><strong>Reason:</strong> {rec.reason}</p>
+                            {rec.expected_impact && (
+                              <p className="text-sm text-primary"><strong>Expected Impact:</strong> {rec.expected_impact}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
