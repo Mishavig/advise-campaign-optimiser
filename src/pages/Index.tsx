@@ -50,6 +50,11 @@ const Index = () => {
                   Insights
                 </Button>
               </Link>
+              <Link to="/debug">
+                <Button variant="ghost" size="sm">
+                  Debug
+                </Button>
+              </Link>
               <Link to="/dashboard">
                 <Button>
                   Get Started
