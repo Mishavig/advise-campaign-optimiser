@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,50 +22,7 @@ import {
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold">AD-ViSOR</h1>
-                <p className="text-sm text-muted-foreground">Campaign Intelligence Platform</p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Link to="/dashboard">
-                <Button variant="ghost" size="sm">
-                  Dashboard
-                </Button>
-              </Link>
-              <Link to="/campaigns">
-                <Button variant="ghost" size="sm">
-                  Campaigns
-                </Button>
-              </Link>
-              <Link to="/insights">
-                <Button variant="ghost" size="sm">
-                  Insights
-                </Button>
-              </Link>
-              <Link to="/debug">
-                <Button variant="ghost" size="sm">
-                  Debug
-                </Button>
-              </Link>
-              <Link to="/dashboard">
-                <Button>
-                  Get Started
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navigation />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">

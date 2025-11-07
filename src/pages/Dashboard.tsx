@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -183,58 +184,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link to="/" className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                  <BarChart3 className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold">AD-ViSOR Dashboard</h1>
-                  <p className="text-sm text-muted-foreground">Comprehensive Analytics Overview</p>
-                </div>
-              </Link>
-            </div>
-            <div className="flex items-center gap-3">
-              <Select value={selectedAccount} onValueChange={setSelectedAccount}>
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Select account" />
-                </SelectTrigger>
-                <SelectContent>
-                  {mockAdAccounts.map((account) => (
-                    <SelectItem key={account.id} value={account.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{account.name}</span>
-                        <span className="text-xs text-muted-foreground">{account.businessName}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <div className="flex gap-2">
-                <Link to="/campaigns">
-                  <Button variant="outline" size="sm">
-                    Campaigns
-                  </Button>
-                </Link>
-                <Link to="/insights">
-                  <Button variant="outline" size="sm">
-                    Insights
-                  </Button>
-                </Link>
-                <Link to="/recommendations">
-                  <Button variant="outline" size="sm">
-                    Recommendations
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navigation />
 
       <main className="container mx-auto px-4 py-8">
         {/* Time Range Selector */}

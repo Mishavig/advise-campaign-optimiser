@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -184,11 +185,13 @@ const Recommendations = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      
+      <div className="container mx-auto p-6 space-y-6">
+        {/* Page Header */}
         <div>
-          <h1 className="text-4xl font-bold mb-2">AI Recommendations</h1>
+          <h2 className="text-3xl font-bold mb-2">AI Recommendations</h2>
           <p className="text-muted-foreground">
             Data-driven insights to optimize your campaign performance
           </p>
