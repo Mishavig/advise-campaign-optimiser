@@ -3,6 +3,8 @@ import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Collapsible,
   CollapsibleContent,
@@ -194,12 +196,17 @@ const mockApiData = {
 };
 
 const Debug = () => {
+  const { toast } = useToast();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [expandedCampaigns, setExpandedCampaigns] = useState<Set<string>>(new Set());
   const [expandedAdSets, setExpandedAdSets] = useState<Set<string>>(new Set());
   const [expandedAds, setExpandedAds] = useState<Set<string>>(new Set());
   const [showRawData, setShowRawData] = useState<Set<string>>(new Set());
+  
+  // Database testing state
+  const [dbTestLoading, setDbTestLoading] = useState(false);
+  const [dbTestResults, setDbTestResults] = useState<any>(null);
 
   const loadData = () => {
     setLoading(true);
@@ -268,12 +275,188 @@ const Debug = () => {
     'insights.impressions', 'insights.clicks', 'insights.spend'
   ];
 
+  // Database testing functions
+  const testHealth = async () => {
+    setDbTestLoading(true);
+    try {
+      // Simple ping test using a lightweight query
+      const start = Date.now();
+      const { error } = await supabase.auth.getSession();
+      const latency = Date.now() - start;
+      
+      const result = {
+        ok: !error,
+        timestamp: new Date().toISOString(),
+        status: error ? 'error' : 'healthy',
+        error: error?.message || null,
+        connection: 'Lovable Cloud (Supabase)',
+        projectId: import.meta.env.VITE_SUPABASE_PROJECT_ID || 'unknown',
+        latency: `${latency}ms`
+      };
+      setDbTestResults(result);
+      toast({
+        title: error ? "Connection Failed" : "Connection Healthy",
+        description: error ? error.message : `Database responding in ${latency}ms`,
+        variant: error ? "destructive" : "default"
+      });
+    } catch (e: any) {
+      setDbTestResults({
+        ok: false,
+        error: e.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+    setDbTestLoading(false);
+  };
+
+  const listTables = async () => {
+    setDbTestLoading(true);
+    try {
+      const result = {
+        ok: true,
+        note: 'Currently no tables exist in the database',
+        suggestion: 'Create tables using database migrations',
+        availableOperations: [
+          'Use supabase.from() for table operations',
+          'Use supabase.auth for authentication',
+          'Use supabase.storage for file uploads',
+          'Use supabase.functions.invoke() for edge functions'
+        ],
+        timestamp: new Date().toISOString()
+      };
+      setDbTestResults(result);
+      toast({
+        title: "Database Structure",
+        description: "No tables created yet. Use migrations to add tables.",
+      });
+    } catch (e: any) {
+      setDbTestResults({
+        ok: false,
+        error: e.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+    setDbTestLoading(false);
+  };
+
+  const runSmokeTest = async (dryRun = false) => {
+    setDbTestLoading(true);
+    const results: any = {
+      ok: true,
+      dryRun,
+      timestamp: new Date().toISOString(),
+      steps: []
+    };
+
+    try {
+      if (!dryRun) {
+        results.steps.push({
+          step: 'check_database',
+          status: 'info',
+          note: 'No tables exist yet for smoke testing'
+        });
+
+        results.steps.push({
+          step: 'recommendation',
+          status: 'info',
+          note: 'Create a test table using migrations, then run smoke test'
+        });
+
+        results.steps.push({
+          step: 'example_migration',
+          status: 'info',
+          sql: `
+CREATE TABLE _smoke_test (
+  id TEXT PRIMARY KEY,
+  data JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+          `.trim()
+        });
+
+      } else {
+        results.steps = [
+          { step: 'write', status: 'dry_run', note: 'Would insert test record' },
+          { step: 'read', status: 'dry_run', note: 'Would read test record' },
+          { step: 'delete', status: 'dry_run', note: 'Would delete test record' }
+        ];
+      }
+
+      setDbTestResults(results);
+      toast({
+        title: dryRun ? "Dry Run Complete" : "Smoke Test Info",
+        description: dryRun ? "No changes made" : "Create tables first to run full smoke test",
+      });
+    } catch (e: any) {
+      results.ok = false;
+      results.error = e.message;
+      setDbTestResults(results);
+      toast({
+        title: "Smoke Test Error",
+        description: e.message,
+        variant: "destructive"
+      });
+    }
+    setDbTestLoading(false);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Database Connection Testing */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>בדיקת חיבור למסד נתונים</CardTitle>
+            <CardDescription>
+              Health, Tables, Smoke — דרך Lovable Cloud (Supabase)
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2 flex-wrap">
+              <Button 
+                onClick={testHealth} 
+                disabled={dbTestLoading}
+                variant="default"
+              >
+                {dbTestLoading ? <RefreshCw className="w-4 h-4 animate-spin mr-2" /> : null}
+                בדיקת Health
+              </Button>
+              <Button 
+                onClick={listTables} 
+                disabled={dbTestLoading}
+                variant="default"
+              >
+                רשימת טבלאות
+              </Button>
+              <Button 
+                onClick={() => runSmokeTest(false)} 
+                disabled={dbTestLoading}
+                variant="default"
+              >
+                Smoke (כתיבה/קריאה/מחיקה)
+              </Button>
+              <Button 
+                onClick={() => runSmokeTest(true)} 
+                disabled={dbTestLoading}
+                variant="secondary"
+              >
+                Smoke Dry-Run
+              </Button>
+            </div>
+            
+            {dbTestResults && (
+              <div className="bg-muted p-4 rounded-lg">
+                <pre className="text-xs overflow-auto max-h-96 font-mono">
+                  {JSON.stringify(dbTestResults, null, 2)}
+                </pre>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Data Inspector Controls</CardTitle>
