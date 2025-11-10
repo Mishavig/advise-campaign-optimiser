@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Search,
@@ -153,6 +154,7 @@ const Campaigns = () => {
   const [analysisData, setAnalysisData] = useState<any>(null);
   const [analysisMode, setAnalysisMode] = useState<"full" | "short">("full");
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -243,11 +245,11 @@ const Campaigns = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
         {/* Page Title */}
         <div className="flex flex-col gap-2">
-          <h2 className="text-3xl font-bold">Campaign Management</h2>
-          <p className="text-muted-foreground">Monitor and optimize all your advertising campaigns</p>
+          <h2 className="text-2xl md:text-3xl font-bold">Campaign Management</h2>
+          <p className="text-sm md:text-base text-muted-foreground">Monitor and optimize all your advertising campaigns</p>
         </div>
 
         {/* Filters */}
@@ -315,47 +317,103 @@ const Campaigns = () => {
                 <CardTitle>Campaign Performance</CardTitle>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Campaign</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Budget</TableHead>
-                      <TableHead className="text-right">Spent</TableHead>
-                      <TableHead className="text-right">Impressions</TableHead>
-                      <TableHead className="text-right">Clicks</TableHead>
-                      <TableHead className="text-right">CTR</TableHead>
-                      <TableHead className="text-right">ROAS</TableHead>
-                      <TableHead>Performance</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                {isMobile ? (
+                  /* Mobile Card View */
+                  <div className="space-y-3">
                     {filteredCampaigns.map((campaign) => (
-                      <TableRow key={campaign.id}>
-                        <TableCell className="font-medium">{campaign.name}</TableCell>
-                        <TableCell>{getStatusBadge(campaign.status)}</TableCell>
-                        <TableCell className="text-right">${campaign.budget.toLocaleString()}</TableCell>
-                        <TableCell className="text-right">${campaign.spent.toLocaleString()}</TableCell>
-                        <TableCell className="text-right">{campaign.impressions.toLocaleString()}</TableCell>
-                        <TableCell className="text-right">{campaign.clicks.toLocaleString()}</TableCell>
-                        <TableCell className="text-right">{campaign.ctr.toFixed(2)}%</TableCell>
-                        <TableCell className="text-right">{campaign.roas.toFixed(1)}x</TableCell>
-                        <TableCell>{getPerformanceBadge(campaign.performance)}</TableCell>
-                        <TableCell className="text-right">
+                      <Card key={campaign.id} className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="font-semibold text-base">{campaign.name}</h3>
+                            {getStatusBadge(campaign.status)}
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                              <p className="text-muted-foreground text-xs">Budget</p>
+                              <p className="font-medium">${campaign.budget.toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-muted-foreground text-xs">Spent</p>
+                              <p className="font-medium">${campaign.spent.toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-muted-foreground text-xs">Clicks</p>
+                              <p className="font-medium">{campaign.clicks.toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-muted-foreground text-xs">CTR</p>
+                              <p className="font-medium">{campaign.ctr.toFixed(2)}%</p>
+                            </div>
+                            <div>
+                              <p className="text-muted-foreground text-xs">ROAS</p>
+                              <p className="font-medium">{campaign.roas.toFixed(1)}x</p>
+                            </div>
+                            <div>
+                              <p className="text-muted-foreground text-xs">Performance</p>
+                              {getPerformanceBadge(campaign.performance)}
+                            </div>
+                          </div>
+
                           <Button 
                             size="sm" 
                             variant="outline"
+                            className="w-full"
                             onClick={() => handleAnalyzeCampaign(campaign)}
                           >
                             <Sparkles className="w-4 h-4 mr-1" />
                             Analyze with AI
                           </Button>
-                        </TableCell>
-                      </TableRow>
+                        </div>
+                      </Card>
                     ))}
-                  </TableBody>
-                </Table>
+                  </div>
+                ) : (
+                  /* Desktop Table View */
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Campaign</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead className="text-right">Budget</TableHead>
+                          <TableHead className="text-right">Spent</TableHead>
+                          <TableHead className="text-right">Impressions</TableHead>
+                          <TableHead className="text-right">Clicks</TableHead>
+                          <TableHead className="text-right">CTR</TableHead>
+                          <TableHead className="text-right">ROAS</TableHead>
+                          <TableHead>Performance</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredCampaigns.map((campaign) => (
+                          <TableRow key={campaign.id}>
+                            <TableCell className="font-medium">{campaign.name}</TableCell>
+                            <TableCell>{getStatusBadge(campaign.status)}</TableCell>
+                            <TableCell className="text-right">${campaign.budget.toLocaleString()}</TableCell>
+                            <TableCell className="text-right">${campaign.spent.toLocaleString()}</TableCell>
+                            <TableCell className="text-right">{campaign.impressions.toLocaleString()}</TableCell>
+                            <TableCell className="text-right">{campaign.clicks.toLocaleString()}</TableCell>
+                            <TableCell className="text-right">{campaign.ctr.toFixed(2)}%</TableCell>
+                            <TableCell className="text-right">{campaign.roas.toFixed(1)}x</TableCell>
+                            <TableCell>{getPerformanceBadge(campaign.performance)}</TableCell>
+                            <TableCell className="text-right">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleAnalyzeCampaign(campaign)}
+                              >
+                                <Sparkles className="w-4 h-4 mr-1" />
+                                Analyze with AI
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -368,7 +426,7 @@ const Campaigns = () => {
 
       {/* AI Analysis Dialog */}
       <Dialog open={analysisOpen} onOpenChange={setAnalysisOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto sm:max-h-[80vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary" />
@@ -381,12 +439,13 @@ const Campaigns = () => {
 
           <div className="space-y-4">
             {/* Analysis Mode Selector */}
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 size="sm"
                 variant={analysisMode === "full" ? "default" : "outline"}
                 onClick={() => setAnalysisMode("full")}
                 disabled={analysisLoading}
+                className="flex-1 sm:flex-none"
               >
                 Full Analysis
               </Button>
@@ -395,6 +454,7 @@ const Campaigns = () => {
                 variant={analysisMode === "short" ? "default" : "outline"}
                 onClick={() => setAnalysisMode("short")}
                 disabled={analysisLoading}
+                className="flex-1 sm:flex-none"
               >
                 Quick Summary
               </Button>
@@ -403,7 +463,7 @@ const Campaigns = () => {
                   size="sm"
                   variant="outline"
                   onClick={() => handleAnalyzeCampaign(selectedCampaign)}
-                  className="ml-auto"
+                  className="w-full sm:w-auto sm:ml-auto"
                 >
                   <Sparkles className="w-4 h-4 mr-1" />
                   Re-analyze
