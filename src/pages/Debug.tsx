@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -203,6 +204,7 @@ const Debug = () => {
   const [expandedAdSets, setExpandedAdSets] = useState<Set<string>>(new Set());
   const [expandedAds, setExpandedAds] = useState<Set<string>>(new Set());
   const [showRawData, setShowRawData] = useState<Set<string>>(new Set());
+  const isMobile = useIsMobile();
   
   // Database testing state
   const [dbTestLoading, setDbTestLoading] = useState(false);
@@ -405,45 +407,53 @@ CREATE TABLE _smoke_test (
       <Navigation />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 md:px-6 py-6 md:py-8">
         {/* Database Connection Testing */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>בדיקת חיבור למסד נתונים</CardTitle>
-            <CardDescription>
+        <Card className="mb-4 md:mb-6">
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-lg md:text-xl">בדיקת חיבור למסד נתונים</CardTitle>
+            <CardDescription className="text-xs md:text-sm">
               Health, Tables, Smoke — דרך Lovable Cloud (Supabase)
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2 flex-wrap">
+          <CardContent className="space-y-4 p-4 md:p-6">
+            <div className="grid grid-cols-2 md:flex gap-2 flex-wrap">
               <Button 
                 onClick={testHealth} 
                 disabled={dbTestLoading}
                 variant="default"
+                size={isMobile ? "sm" : "default"}
+                className="w-full md:w-auto"
               >
-                {dbTestLoading ? <RefreshCw className="w-4 h-4 animate-spin mr-2" /> : null}
-                בדיקת Health
+                {dbTestLoading ? <RefreshCw className="w-3 h-3 md:w-4 md:h-4 animate-spin mr-1 md:mr-2" /> : null}
+                <span className="text-xs md:text-sm">Health</span>
               </Button>
               <Button 
                 onClick={listTables} 
                 disabled={dbTestLoading}
                 variant="default"
+                size={isMobile ? "sm" : "default"}
+                className="w-full md:w-auto"
               >
-                רשימת טבלאות
+                <span className="text-xs md:text-sm">טבלאות</span>
               </Button>
               <Button 
                 onClick={() => runSmokeTest(false)} 
                 disabled={dbTestLoading}
                 variant="default"
+                size={isMobile ? "sm" : "default"}
+                className="w-full md:w-auto"
               >
-                Smoke (כתיבה/קריאה/מחיקה)
+                <span className="text-xs md:text-sm">Smoke</span>
               </Button>
               <Button 
                 onClick={() => runSmokeTest(true)} 
                 disabled={dbTestLoading}
                 variant="secondary"
+                size={isMobile ? "sm" : "default"}
+                className="w-full md:w-auto"
               >
-                Smoke Dry-Run
+                <span className="text-xs md:text-sm">Dry-Run</span>
               </Button>
             </div>
             
@@ -457,14 +467,14 @@ CREATE TABLE _smoke_test (
           </CardContent>
         </Card>
 
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Data Inspector Controls</CardTitle>
-            <CardDescription>
+        <Card className="mb-4 md:mb-6">
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-lg md:text-xl">Data Inspector Controls</CardTitle>
+            <CardDescription className="text-xs md:text-sm">
               Load and inspect all available data from Facebook Ads API
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex gap-4">
+          <CardContent className="flex flex-col sm:flex-row gap-3 md:gap-4 p-4 md:p-6">
             <Button 
               onClick={loadData} 
               disabled={loading}

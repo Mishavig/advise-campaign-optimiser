@@ -27,19 +27,19 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-background" />
-        <div className="container mx-auto px-4 py-24 relative">
+        <div className="container mx-auto px-4 py-12 md:py-24 relative">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <Badge className="mx-auto" variant="secondary">
               <Sparkles className="w-3 h-3 mr-1" />
               AI-Powered Campaign Intelligence
             </Badge>
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
               Transform Your Ad Performance with{" "}
               <span className="text-gradient bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 AI-Driven Insights
               </span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto">
               AD-ViSOR analyzes your campaigns in real-time, identifies optimization opportunities, 
               and provides actionable recommendations to maximize your ROAS.
             </p>
@@ -76,12 +76,12 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-muted/50">
+      <section className="py-12 md:py-24 bg-muted/50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8 md:mb-16">
             <Badge className="mb-4" variant="secondary">Features</Badge>
-            <h2 className="text-4xl font-bold mb-4">Everything you need to optimize campaigns</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <h2 className="text-2xl md:text-4xl font-bold mb-4">Everything you need to optimize campaigns</h2>
+            <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto">
               Powerful tools and insights to help you make data-driven decisions
             </p>
           </div>
@@ -157,7 +157,7 @@ const Index = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-24">
+      <section className="py-12 md:py-24">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
@@ -186,12 +186,12 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-24 bg-muted/50">
+      <section className="py-12 md:py-24 bg-muted/50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8 md:mb-16">
             <Badge className="mb-4" variant="secondary">How It Works</Badge>
-            <h2 className="text-4xl font-bold mb-4">Get started in minutes</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <h2 className="text-2xl md:text-4xl font-bold mb-4">Get started in minutes</h2>
+            <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto">
               Connect your ad accounts and let AI do the heavy lifting
             </p>
           </div>
@@ -228,13 +228,13 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24">
+      <section className="py-12 md:py-24">
         <div className="container mx-auto px-4">
           <Card className="bg-gradient-to-br from-primary to-accent text-white overflow-hidden relative">
             <div className="absolute inset-0 bg-grid-white/10" />
-            <CardContent className="relative p-12 text-center">
-              <h2 className="text-4xl font-bold mb-4">Ready to optimize your campaigns?</h2>
-              <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
+            <CardContent className="relative p-6 md:p-12 text-center">
+              <h2 className="text-2xl md:text-4xl font-bold mb-4">Ready to optimize your campaigns?</h2>
+              <p className="text-base md:text-xl mb-8 text-white/90 max-w-2xl mx-auto">
                 Join thousands of marketers who trust AD-ViSOR to maximize their advertising ROI
               </p>
               <div className="flex gap-4 justify-center flex-wrap">

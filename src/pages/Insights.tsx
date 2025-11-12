@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -88,6 +89,7 @@ const chartConfig = {
 const Insights = () => {
   const [selectedCampaign, setSelectedCampaign] = useState("all");
   const [dateRange, setDateRange] = useState("7d");
+  const isMobile = useIsMobile();
 
   return (
     <div className="min-h-screen bg-background">
@@ -96,9 +98,9 @@ const Insights = () => {
       {/* Filters Bar */}
       <div className="border-b border-border bg-card/30">
         <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
             <Select value={dateRange} onValueChange={setDateRange}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-full sm:w-[140px]">
                 <Calendar className="w-4 h-4 mr-2" />
                 <SelectValue />
               </SelectTrigger>
@@ -110,7 +112,7 @@ const Insights = () => {
               </SelectContent>
             </Select>
             <Select value={selectedCampaign} onValueChange={setSelectedCampaign}>
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-full sm:w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -124,30 +126,34 @@ const Insights = () => {
       </div>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="audience" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
-            <TabsTrigger value="audience">
-              <Users className="w-4 h-4 mr-2" />
-              Audience
+      <main className="container mx-auto px-4 md:px-6 py-6 md:py-8">
+        <Tabs defaultValue="audience" className="space-y-4 md:space-y-6">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px]">
+            <TabsTrigger value="audience" className="text-xs sm:text-sm">
+              <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Audience</span>
+              <span className="sm:hidden">Aud.</span>
             </TabsTrigger>
-            <TabsTrigger value="creative">
-              <ImageIcon className="w-4 h-4 mr-2" />
-              Creative
+            <TabsTrigger value="creative" className="text-xs sm:text-sm">
+              <ImageIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Creative</span>
+              <span className="sm:hidden">Cre.</span>
             </TabsTrigger>
-            <TabsTrigger value="trends">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Trends
+            <TabsTrigger value="trends" className="text-xs sm:text-sm">
+              <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Trends</span>
+              <span className="sm:hidden">Trend</span>
             </TabsTrigger>
-            <TabsTrigger value="placements">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Placements
+            <TabsTrigger value="placements" className="text-xs sm:text-sm">
+              <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Placements</span>
+              <span className="sm:hidden">Place</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Audience Tab */}
-          <TabsContent value="audience" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
+          <TabsContent value="audience" className="space-y-4 md:space-y-6">
+            <div className="grid gap-4 md:gap-6 md:grid-cols-2">
               {/* Age Breakdown */}
               <Card className="shadow-card">
                 <CardHeader>

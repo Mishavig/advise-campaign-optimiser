@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -101,6 +102,7 @@ const Recommendations = () => {
   const [filter, setFilter] = useState<"all" | "now" | "later">("all");
   const [statusFilter, setStatusFilter] = useState<string>("pending");
   const [campaignFilter, setCampaignFilter] = useState<string>("all");
+  const isMobile = useIsMobile();
 
   const campaigns = Array.from(new Set(mockRecommendations.map(r => r.campaign)));
 
@@ -188,53 +190,53 @@ const Recommendations = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
         {/* Page Header */}
         <div>
-          <h2 className="text-3xl font-bold mb-2">AI Recommendations</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl md:text-3xl font-bold mb-2">AI Recommendations</h2>
+          <p className="text-sm md:text-base text-muted-foreground">
             Data-driven insights to optimize your campaign performance
           </p>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           <Card>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-destructive">{priorityNow.length}</div>
-              <p className="text-sm text-muted-foreground">Action Needed Now</p>
+            <CardContent className="pt-4 md:pt-6">
+              <div className="text-xl md:text-2xl font-bold text-destructive">{priorityNow.length}</div>
+              <p className="text-xs md:text-sm text-muted-foreground">Action Now</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-primary">{priorityLater.length}</div>
-              <p className="text-sm text-muted-foreground">Plan Ahead</p>
+            <CardContent className="pt-4 md:pt-6">
+              <div className="text-xl md:text-2xl font-bold text-primary">{priorityLater.length}</div>
+              <p className="text-xs md:text-sm text-muted-foreground">Plan Ahead</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-success">
+            <CardContent className="pt-4 md:pt-6">
+              <div className="text-xl md:text-2xl font-bold text-success">
                 {mockRecommendations.filter(r => r.status === "implemented").length}
               </div>
-              <p className="text-sm text-muted-foreground">Implemented</p>
+              <p className="text-xs md:text-sm text-muted-foreground">Done</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-foreground">
+            <CardContent className="pt-4 md:pt-6">
+              <div className="text-xl md:text-2xl font-bold text-foreground">
                 {campaigns.length}
               </div>
-              <p className="text-sm text-muted-foreground">Campaigns Analyzed</p>
+              <p className="text-xs md:text-sm text-muted-foreground">Campaigns</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Filters */}
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex flex-wrap gap-4">
-              <div className="flex-1 min-w-[200px]">
-                <label className="text-sm font-medium mb-2 block">Priority</label>
+          <CardContent className="pt-4 md:pt-6">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+              <div className="flex-1 min-w-0">
+                <label className="text-xs md:text-sm font-medium mb-2 block">Priority</label>
                 <Select value={filter} onValueChange={(v: any) => setFilter(v)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -247,8 +249,8 @@ const Recommendations = () => {
                 </Select>
               </div>
               
-              <div className="flex-1 min-w-[200px]">
-                <label className="text-sm font-medium mb-2 block">Status</label>
+              <div className="flex-1 min-w-0">
+                <label className="text-xs md:text-sm font-medium mb-2 block">Status</label>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger>
                     <SelectValue />
@@ -262,8 +264,8 @@ const Recommendations = () => {
                 </Select>
               </div>
 
-              <div className="flex-1 min-w-[200px]">
-                <label className="text-sm font-medium mb-2 block">Campaign</label>
+              <div className="flex-1 min-w-0">
+                <label className="text-xs md:text-sm font-medium mb-2 block">Campaign</label>
                 <Select value={campaignFilter} onValueChange={setCampaignFilter}>
                   <SelectTrigger>
                     <SelectValue />
@@ -282,19 +284,19 @@ const Recommendations = () => {
 
         {/* Recommendations */}
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 max-w-md">
-            <TabsTrigger value="all">All ({filteredRecommendations.length})</TabsTrigger>
-            <TabsTrigger value="now">
-              <Zap className="h-4 w-4 mr-2" />
+          <TabsList className="grid w-full grid-cols-3 max-w-full md:max-w-md">
+            <TabsTrigger value="all" className="text-xs md:text-sm">All ({filteredRecommendations.length})</TabsTrigger>
+            <TabsTrigger value="now" className="text-xs md:text-sm">
+              <Zap className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
               Now ({priorityNow.length})
             </TabsTrigger>
-            <TabsTrigger value="later">
-              <Clock className="h-4 w-4 mr-2" />
+            <TabsTrigger value="later" className="text-xs md:text-sm">
+              <Clock className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
               Later ({priorityLater.length})
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="all" className="mt-6">
+          <TabsContent value="all" className="mt-4 md:mt-6">
             {filteredRecommendations.length === 0 ? (
               <Card>
                 <CardContent className="pt-6 text-center text-muted-foreground">
@@ -310,7 +312,7 @@ const Recommendations = () => {
             )}
           </TabsContent>
 
-          <TabsContent value="now" className="mt-6">
+          <TabsContent value="now" className="mt-4 md:mt-6">
             {priorityNow.length === 0 ? (
               <Card>
                 <CardContent className="pt-6 text-center text-muted-foreground">
@@ -326,7 +328,7 @@ const Recommendations = () => {
             )}
           </TabsContent>
 
-          <TabsContent value="later" className="mt-6">
+          <TabsContent value="later" className="mt-4 md:mt-6">
             {priorityLater.length === 0 ? (
               <Card>
                 <CardContent className="pt-6 text-center text-muted-foreground">

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -132,6 +133,7 @@ const chartConfig = {
 const Dashboard = () => {
   const [timeRange, setTimeRange] = useState("7d");
   const [selectedAccount, setSelectedAccount] = useState("1");
+  const isMobile = useIsMobile();
 
   // Calculate totals
   const totalMetrics = mockCampaigns.reduce(
@@ -186,38 +188,38 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 md:px-6 py-6 md:py-8">
         {/* Time Range Selector */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Performance Dashboard</h2>
-          <Tabs value={timeRange} onValueChange={setTimeRange}>
-            <TabsList>
-              <TabsTrigger value="24h">24h</TabsTrigger>
-              <TabsTrigger value="7d">7 Days</TabsTrigger>
-              <TabsTrigger value="30d">30 Days</TabsTrigger>
-              <TabsTrigger value="90d">90 Days</TabsTrigger>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <h2 className="text-xl md:text-2xl font-bold">Performance Dashboard</h2>
+          <Tabs value={timeRange} onValueChange={setTimeRange} className="w-full sm:w-auto">
+            <TabsList className="grid grid-cols-4 w-full sm:w-auto">
+              <TabsTrigger value="24h" className="text-xs sm:text-sm">24h</TabsTrigger>
+              <TabsTrigger value="7d" className="text-xs sm:text-sm">7d</TabsTrigger>
+              <TabsTrigger value="30d" className="text-xs sm:text-sm">30d</TabsTrigger>
+              <TabsTrigger value="90d" className="text-xs sm:text-sm">90d</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
 
         {/* KPI Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="grid gap-3 md:gap-4 grid-cols-2 lg:grid-cols-4 mb-6 md:mb-8">
           {kpiCards.map((kpi) => (
             <Card key={kpi.title} className="shadow-card hover:shadow-elevated transition-all duration-300">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">{kpi.title}</CardTitle>
-                <kpi.icon className={`w-5 h-5 ${kpi.color}`} />
+              <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6">
+                <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">{kpi.title}</CardTitle>
+                <kpi.icon className={`w-4 h-4 md:w-5 md:h-5 ${kpi.color}`} />
               </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold mb-1">{kpi.value}</div>
-                <div className="flex items-center text-sm">
+              <CardContent className="p-4 md:p-6 pt-0">
+                <div className="text-xl md:text-3xl font-bold mb-1">{kpi.value}</div>
+                <div className="flex items-center text-xs md:text-sm">
                   {kpi.trend === "up" ? (
-                    <ArrowUpRight className="w-4 h-4 text-success mr-1" />
+                    <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4 text-success mr-1" />
                   ) : (
-                    <ArrowDownRight className="w-4 h-4 text-destructive mr-1" />
+                    <ArrowDownRight className="w-3 h-3 md:w-4 md:h-4 text-destructive mr-1" />
                   )}
                   <span className={kpi.trend === "up" ? "text-success" : "text-destructive"}>{kpi.change}</span>
-                  <span className="text-muted-foreground ml-1">vs last period</span>
+                  <span className="text-muted-foreground ml-1 hidden sm:inline">vs last period</span>
                 </div>
               </CardContent>
             </Card>
@@ -225,7 +227,7 @@ const Dashboard = () => {
         </div>
 
         {/* Main Charts Grid */}
-        <div className="grid gap-6 lg:grid-cols-2 mb-8">
+        <div className="grid gap-4 md:gap-6 lg:grid-cols-2 mb-6 md:mb-8">
           {/* Performance Trends */}
           <Card className="shadow-card">
             <CardHeader>
@@ -288,7 +290,7 @@ const Dashboard = () => {
         </div>
 
         {/* Campaigns & Recommendations Grid */}
-        <div className="grid gap-6 lg:grid-cols-3 mb-8">
+        <div className="grid gap-4 md:gap-6 lg:grid-cols-3 mb-6 md:mb-8">
           {/* Top Campaigns */}
           <Card className="lg:col-span-2 shadow-card">
             <CardHeader>
@@ -315,7 +317,7 @@ const Dashboard = () => {
                           {campaign.status}
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-4 gap-4 text-sm">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 text-xs md:text-sm">
                         <div>
                           <p className="text-muted-foreground">Impressions</p>
                           <p className="font-medium">{campaign.metrics.impressions.toLocaleString()}</p>
@@ -391,7 +393,7 @@ const Dashboard = () => {
         </div>
 
         {/* Additional Metrics */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-3">
           <Card className="shadow-card">
             <CardHeader>
               <CardTitle>Average CTR</CardTitle>
