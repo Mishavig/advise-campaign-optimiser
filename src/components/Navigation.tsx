@@ -1,10 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Target } from "lucide-react";
+import { BarChart3, Target, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 export const Navigation = () => {
   const location = useLocation();
+  const { theme, setTheme } = useTheme();
   
   const navLinks = [
     { to: "/dashboard", label: "Dashboard" },
@@ -41,6 +43,14 @@ export const Navigation = () => {
                 </Button>
               </Link>
             ))}
+            <Button 
+              size="sm" 
+              variant="ghost"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="ml-2"
+            >
+              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
             <Button size="sm" className="ml-2">
               <Target className="w-4 h-4 mr-2" />
               Create Campaign
