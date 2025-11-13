@@ -22,13 +22,13 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// Mock data for audience breakdown
+// Mock data for audience breakdown with comprehensive metrics
 const audienceByAge = [
-  { age: "18-24", impressions: 12500, clicks: 485, conversions: 18, spend: 850 },
-  { age: "25-34", impressions: 34200, clicks: 1420, conversions: 65, spend: 2100 },
-  { age: "35-44", impressions: 28900, clicks: 1050, conversions: 48, spend: 1850 },
-  { age: "45-54", impressions: 15600, clicks: 580, conversions: 22, spend: 980 },
-  { age: "55+", impressions: 8200, clicks: 315, conversions: 12, spend: 620 },
+  { age: "18-24", impressions: 12500, reach: 9800, frequency: 1.28, clicks: 485, linkClicks: 450, conversions: 18, spend: 850, ctr: 3.88, cpc: 1.75, cpm: 68.00, cpa: 47.22, videoViews: 890, postEngagement: 234 },
+  { age: "25-34", impressions: 34200, reach: 26500, frequency: 1.29, clicks: 1420, linkClicks: 1320, conversions: 65, spend: 2100, ctr: 4.15, cpc: 1.48, cpm: 61.40, cpa: 32.31, videoViews: 2400, postEngagement: 678 },
+  { age: "35-44", impressions: 28900, reach: 22100, frequency: 1.31, clicks: 1050, linkClicks: 980, conversions: 48, spend: 1850, ctr: 3.63, cpc: 1.76, cpm: 64.01, cpa: 38.54, videoViews: 1890, postEngagement: 512 },
+  { age: "45-54", impressions: 15600, reach: 12000, frequency: 1.30, clicks: 580, linkClicks: 540, conversions: 22, spend: 980, ctr: 3.72, cpc: 1.69, cpm: 62.82, cpa: 44.55, videoViews: 1020, postEngagement: 289 },
+  { age: "55+", impressions: 8200, reach: 6400, frequency: 1.28, clicks: 315, linkClicks: 295, conversions: 12, spend: 620, ctr: 3.84, cpc: 1.97, cpm: 75.61, cpa: 51.67, videoViews: 560, postEngagement: 156 },
 ];
 
 const audienceByGender = [
