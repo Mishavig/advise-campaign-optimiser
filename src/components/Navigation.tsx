@@ -13,6 +13,7 @@ export const Navigation = () => {
     { to: "/campaigns", label: "Campaigns" },
     { to: "/insights", label: "Insights" },
     { to: "/recommendations", label: "Recommendations" },
+    { to: "/audience-analysis", label: "Audience" },
     { to: "/debug", label: "Debug" },
   ];
 
