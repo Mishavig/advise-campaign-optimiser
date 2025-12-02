@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Insights from "./pages/Insights";
 import Recommendations from "./pages/Recommendations";
 import Campaigns from "./pages/Campaigns";
+import AudienceAnalysis from "./pages/AudienceAnalysis";
 import Debug from "./pages/Debug";
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/insights" element={<Insights />} />
             <Route path="/recommendations" element={<Recommendations />} />
             <Route path="/campaigns" element={<Campaigns />} />
+            <Route path="/audience-analysis" element={<AudienceAnalysis />} />
             <Route path="/debug" element={<Debug />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
