@@ -159,27 +159,27 @@ const Index = () => {
       {/* Stats Section */}
       <section className="py-12 md:py-24">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8">
             <div className="text-center">
-              <div className="text-5xl font-bold text-gradient bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
+              <div className="text-4xl md:text-5xl font-bold text-gradient bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
                 4.2x
               </div>
-              <p className="text-lg font-semibold mb-1">Average ROAS Increase</p>
-              <p className="text-muted-foreground">With AI optimization</p>
+              <p className="text-base md:text-lg font-semibold mb-1">Average ROAS Increase</p>
+              <p className="text-sm text-muted-foreground">With AI optimization</p>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-gradient bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
+              <div className="text-4xl md:text-5xl font-bold text-gradient bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
                 67%
               </div>
-              <p className="text-lg font-semibold mb-1">Time Saved</p>
-              <p className="text-muted-foreground">On campaign management</p>
+              <p className="text-base md:text-lg font-semibold mb-1">Time Saved</p>
+              <p className="text-sm text-muted-foreground">On campaign management</p>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-gradient bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
+              <div className="text-4xl md:text-5xl font-bold text-gradient bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
                 24/7
               </div>
-              <p className="text-lg font-semibold mb-1">Monitoring</p>
-              <p className="text-muted-foreground">Real-time performance tracking</p>
+              <p className="text-base md:text-lg font-semibold mb-1">Monitoring</p>
+              <p className="text-sm text-muted-foreground">Real-time performance tracking</p>
             </div>
           </div>
         </div>
@@ -257,9 +257,9 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-12 bg-muted/30">
+      <footer className="border-t border-border py-8 md:py-12 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
@@ -299,7 +299,7 @@ const Index = () => {
               </ul>
             </div>
           </div>
-          <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
+          <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-border text-center text-xs md:text-sm text-muted-foreground">
             <p>&copy; 2024 AD-ViSOR. All rights reserved.</p>
           </div>
         </div>
