@@ -317,17 +317,17 @@ const AudienceAnalysis = () => {
           <TabsContent value="micro" className="space-y-4">
             <Card>
               <CardHeader className="pb-4">
-                <div className="flex items-start justify-between">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                      <Crosshair className="w-5 h-5 text-emerald-400" />
+                    <div className="p-2 md:p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                      <Crosshair className="w-4 h-4 md:w-5 md:h-5 text-emerald-400" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg">מיקרו-סגמנטציה - גישת ה"צלף"</CardTitle>
-                      <CardDescription>זיהוי תת-קהלים עם CPA נמוך ב-30%+ מהממוצע</CardDescription>
+                      <CardTitle className="text-base md:text-lg">מיקרו-סגמנטציה - גישת ה"צלף"</CardTitle>
+                      <CardDescription className="text-xs md:text-sm">זיהוי תת-קהלים עם CPA נמוך ב-30%+ מהממוצע</CardDescription>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-emerald-400 border-emerald-500/30">
+                  <Badge variant="outline" className="text-emerald-400 border-emerald-500/30 w-fit">
                     ממוצע CPA: ₪{avgCpa.toFixed(0)}
                   </Badge>
                 </div>
@@ -368,22 +368,22 @@ const AudienceAnalysis = () => {
                         </div>
 
                         {/* Metrics Row */}
-                        <div className="grid grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                           <div className="text-center p-2 rounded-lg bg-muted/50">
                             <p className="text-xs text-muted-foreground">CPA</p>
-                            <p className="font-bold text-lg">₪{segment.cpa.toFixed(0)}</p>
+                            <p className="font-bold text-base md:text-lg">₪{segment.cpa.toFixed(0)}</p>
                           </div>
                           <div className="text-center p-2 rounded-lg bg-muted/50">
                             <p className="text-xs text-muted-foreground">ROAS</p>
-                            <p className="font-bold text-lg">{segment.roas}x</p>
+                            <p className="font-bold text-base md:text-lg">{segment.roas}x</p>
                           </div>
                           <div className="text-center p-2 rounded-lg bg-muted/50">
                             <p className="text-xs text-muted-foreground">CTR</p>
-                            <p className="font-bold text-lg">{segment.ctr}%</p>
+                            <p className="font-bold text-base md:text-lg">{segment.ctr}%</p>
                           </div>
                           <div className="text-center p-2 rounded-lg bg-muted/50">
                             <p className="text-xs text-muted-foreground">vs ממוצע</p>
-                            <p className={`font-bold text-lg flex items-center justify-center ${segment.improvement > 0 ? "text-emerald-400" : "text-red-400"}`}>
+                            <p className={`font-bold text-base md:text-lg flex items-center justify-center ${segment.improvement > 0 ? "text-emerald-400" : "text-red-400"}`}>
                               {segment.improvement > 0 ? <ArrowDownRight className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
                               {Math.abs(segment.improvement).toFixed(0)}%
                             </p>
@@ -423,17 +423,17 @@ const AudienceAnalysis = () => {
           <TabsContent value="exclusions" className="space-y-4">
             <Card>
               <CardHeader className="pb-4">
-                <div className="flex items-start justify-between">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20">
-                      <Scissors className="w-5 h-5 text-red-400" />
+                    <div className="p-2 md:p-2.5 rounded-xl bg-red-500/10 border border-red-500/20">
+                      <Scissors className="w-4 h-4 md:w-5 md:h-5 text-red-400" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg">החרגה כירורגית</CardTitle>
-                      <CardDescription>מניעת בזבוז כסף במיקומים ופלטפורמות ללא תוצאות</CardDescription>
+                      <CardTitle className="text-base md:text-lg">החרגה כירורגית</CardTitle>
+                      <CardDescription className="text-xs md:text-sm">מניעת בזבוז כסף במיקומים ופלטפורמות</CardDescription>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-red-400 border-red-500/30">
+                  <Badge variant="outline" className="text-red-400 border-red-500/30 w-fit">
                     בזבוז: ₪{excludePlatforms.reduce((s, p) => s + p.spend, 0).toLocaleString()}
                   </Badge>
                 </div>
@@ -478,26 +478,26 @@ const AudienceAnalysis = () => {
                           </div>
 
                           {/* Metrics */}
-                          <div className="grid grid-cols-4 gap-4">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                             <div className="text-center p-2 rounded-lg bg-muted/50">
                               <p className="text-xs text-muted-foreground">הוצאה</p>
-                              <p className="font-bold text-lg">₪{platform.spend}</p>
+                              <p className="font-bold text-base md:text-lg">₪{platform.spend}</p>
                             </div>
                             <div className="text-center p-2 rounded-lg bg-muted/50">
                               <p className="text-xs text-muted-foreground">המרות</p>
-                              <p className={`font-bold text-lg ${platform.conversions === 0 ? "text-red-400" : ""}`}>
+                              <p className={`font-bold text-base md:text-lg ${platform.conversions === 0 ? "text-red-400" : ""}`}>
                                 {platform.conversions}
                               </p>
                             </div>
                             <div className="text-center p-2 rounded-lg bg-muted/50">
                               <p className="text-xs text-muted-foreground">CTR</p>
-                              <p className={`font-bold text-lg ${platform.ctr < 1 ? "text-red-400" : ""}`}>
+                              <p className={`font-bold text-base md:text-lg ${platform.ctr < 1 ? "text-red-400" : ""}`}>
                                 {platform.ctr}%
                               </p>
                             </div>
                             <div className="text-center p-2 rounded-lg bg-muted/50">
                               <p className="text-xs text-muted-foreground">CPA</p>
-                              <p className={`font-bold text-lg ${platform.conversions === 0 ? "text-red-400" : platform.cpa > 40 ? "text-amber-400" : "text-emerald-400"}`}>
+                              <p className={`font-bold text-base md:text-lg ${platform.conversions === 0 ? "text-red-400" : platform.cpa > 40 ? "text-amber-400" : "text-emerald-400"}`}>
                                 {platform.conversions === 0 ? "∞" : `₪${platform.cpa.toFixed(0)}`}
                               </p>
                             </div>
@@ -505,20 +505,20 @@ const AudienceAnalysis = () => {
 
                           {/* Warning/Action */}
                           {isWaste && (
-                            <div className="p-3 rounded-lg bg-red-500/10 flex items-center justify-between gap-3">
+                            <div className="p-3 rounded-lg bg-red-500/10 flex flex-col md:flex-row md:items-center justify-between gap-3">
                               <div className="flex items-start gap-2">
                                 <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
                                 <p className="text-sm">
                                   <strong className="text-red-400">בזבוז תקציב: </strong>
                                   <span className="text-muted-foreground">
                                     {platform.conversions === 0 
-                                      ? `₪${platform.spend} הוצאו ללא אף המרה - CTR של ${platform.ctr}% בלבד`
+                                      ? `₪${platform.spend} הוצאו ללא אף המרה`
                                       : `CPA של ₪${platform.cpa.toFixed(0)} - גבוה מ-2x מהממוצע`
                                     }
                                   </span>
                                 </p>
                               </div>
-                              <Button size="sm" variant="destructive" className="flex-shrink-0">
+                              <Button size="sm" variant="destructive" className="flex-shrink-0 w-full md:w-auto">
                                 <Ban className="w-4 h-4 mr-1" />
                                 החרג
                               </Button>
@@ -537,15 +537,13 @@ const AudienceAnalysis = () => {
           <TabsContent value="creative" className="space-y-4">
             <Card>
               <CardHeader className="pb-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                      <Palette className="w-5 h-5 text-purple-400" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">התאמת קריאייטיב לדמוגרפיה</CardTitle>
-                      <CardDescription>איזה מסר עובד לאיזה קהל - ניתוח ביצועי מודעות</CardDescription>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 md:p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                    <Palette className="w-4 h-4 md:w-5 md:h-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base md:text-lg">התאמת קריאייטיב לדמוגרפיה</CardTitle>
+                    <CardDescription className="text-xs md:text-sm">איזה מסר עובד לאיזה קהל</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -594,13 +592,13 @@ const AudienceAnalysis = () => {
                                     "bg-muted/50"
                                   }`}
                                 >
-                                  <div className="flex items-center gap-3">
+                                  <div className="flex items-center gap-2 md:gap-3">
                                     {isBest ? <TrendingUp className="w-4 h-4 text-emerald-400" /> :
                                      isWorst ? <TrendingDown className="w-4 h-4 text-red-400" /> :
                                      <BarChart3 className="w-4 h-4 text-muted-foreground" />}
-                                    <span className="font-medium">גיל {perf.age}</span>
+                                    <span className="font-medium text-sm md:text-base">גיל {perf.age}</span>
                                   </div>
-                                  <div className="flex items-center gap-4 text-sm">
+                                  <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm">
                                     <div>
                                       <span className="text-muted-foreground">CTR: </span>
                                       <strong className={isBest ? "text-emerald-400" : isWorst ? "text-red-400" : ""}>
@@ -611,7 +609,7 @@ const AudienceAnalysis = () => {
                                       <span className="text-muted-foreground">המרות: </span>
                                       <strong>{perf.conversions}</strong>
                                     </div>
-                                    {adType === "video" && (
+                                    {adType === "video" && !isMobile && (
                                       <div>
                                         <span className="text-muted-foreground">צפייה: </span>
                                         <strong>{perf.avgWatchTime}s</strong>
@@ -651,15 +649,13 @@ const AudienceAnalysis = () => {
           <TabsContent value="saturation" className="space-y-4">
             <Card>
               <CardHeader className="pb-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                      <RefreshCw className="w-5 h-5 text-amber-400" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">זיהוי שחיקת קהל</CardTitle>
-                      <CardDescription>מתי הקהל "מת"? ניתוח תדירות, reach ומגמות</CardDescription>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 md:p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                    <RefreshCw className="w-4 h-4 md:w-5 md:h-5 text-amber-400" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base md:text-lg">זיהוי שחיקת קהל</CardTitle>
+                    <CardDescription className="text-xs md:text-sm">מתי הקהל "מת"? ניתוח תדירות ומגמות</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -702,29 +698,29 @@ const AudienceAnalysis = () => {
                           </div>
 
                           {/* Metrics */}
-                          <div className="grid grid-cols-4 gap-4">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                             <div className="text-center p-2 rounded-lg bg-muted/50">
                               <p className="text-xs text-muted-foreground">מיצוי קהל</p>
-                              <p className={`font-bold text-lg ${isCritical ? "text-red-400" : isWarning ? "text-amber-400" : "text-emerald-400"}`}>
+                              <p className={`font-bold text-base md:text-lg ${isCritical ? "text-red-400" : isWarning ? "text-amber-400" : "text-emerald-400"}`}>
                                 {data.saturationLevel}%
                               </p>
                             </div>
                             <div className="text-center p-2 rounded-lg bg-muted/50">
                               <p className="text-xs text-muted-foreground">תדירות</p>
-                              <p className={`font-bold text-lg ${data.frequency > 4 ? "text-red-400" : data.frequency > 3 ? "text-amber-400" : "text-emerald-400"}`}>
+                              <p className={`font-bold text-base md:text-lg ${data.frequency > 4 ? "text-red-400" : data.frequency > 3 ? "text-amber-400" : "text-emerald-400"}`}>
                                 {data.frequency}x
                               </p>
                             </div>
                             <div className="text-center p-2 rounded-lg bg-muted/50">
                               <p className="text-xs text-muted-foreground">מגמת CTR</p>
-                              <p className={`font-bold text-lg flex items-center justify-center ${data.ctrTrend < 0 ? "text-red-400" : "text-emerald-400"}`}>
+                              <p className={`font-bold text-base md:text-lg flex items-center justify-center ${data.ctrTrend < 0 ? "text-red-400" : "text-emerald-400"}`}>
                                 {data.ctrTrend < 0 ? <TrendingDown className="w-4 h-4" /> : <TrendingUp className="w-4 h-4" />}
                                 {Math.abs(data.ctrTrend)}%
                               </p>
                             </div>
                             <div className="text-center p-2 rounded-lg bg-muted/50">
                               <p className="text-xs text-muted-foreground">הוצאה</p>
-                              <p className="font-bold text-lg">₪{data.spend.toLocaleString()}</p>
+                              <p className="font-bold text-base md:text-lg">₪{data.spend.toLocaleString()}</p>
                             </div>
                           </div>
 
@@ -768,15 +764,13 @@ const AudienceAnalysis = () => {
           <TabsContent value="expansion" className="space-y-4">
             <Card>
               <CardHeader className="pb-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                      <Expand className="w-5 h-5 text-blue-400" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">הרחבה מבוססת הקשרים</CardTitle>
-                      <CardDescription>בניית קהלים חדשים על בסיס סמני הצלחה</CardDescription>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 md:p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                    <Expand className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base md:text-lg">הרחבה מבוססת הקשרים</CardTitle>
+                    <CardDescription className="text-xs md:text-sm">בניית קהלים חדשים על בסיס סמני הצלחה</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -807,23 +801,23 @@ const AudienceAnalysis = () => {
                         </div>
 
                         {/* Metrics */}
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-3 gap-2 md:gap-4">
                           <div className="text-center p-2 rounded-lg bg-muted/50">
-                            <p className="text-xs text-muted-foreground">ביצועים נוכחיים</p>
-                            <p className="font-bold text-emerald-400">{opp.currentPerformance}</p>
+                            <p className="text-xs text-muted-foreground">ביצועים</p>
+                            <p className="font-bold text-emerald-400 text-sm md:text-base">{opp.currentPerformance}</p>
                           </div>
                           <div className="text-center p-2 rounded-lg bg-muted/50">
-                            <p className="text-xs text-muted-foreground">גילאי יעד</p>
-                            <p className="font-bold">{opp.targetAge}</p>
+                            <p className="text-xs text-muted-foreground">גילאים</p>
+                            <p className="font-bold text-sm md:text-base">{opp.targetAge}</p>
                           </div>
                           <div className="text-center p-2 rounded-lg bg-muted/50">
-                            <p className="text-xs text-muted-foreground">Reach פוטנציאלי</p>
-                            <p className="font-bold">{opp.potentialReach.toLocaleString()}</p>
+                            <p className="text-xs text-muted-foreground">Reach</p>
+                            <p className="font-bold text-sm md:text-base">{(opp.potentialReach / 1000).toFixed(0)}K</p>
                           </div>
                         </div>
 
                         {/* Recommendation */}
-                        <div className="p-3 rounded-lg bg-blue-500/10 flex items-center justify-between gap-3">
+                        <div className="p-3 rounded-lg bg-blue-500/10 flex flex-col md:flex-row md:items-center justify-between gap-3">
                           <div className="flex items-start gap-2">
                             <Zap className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
                             <p className="text-sm">
@@ -831,7 +825,7 @@ const AudienceAnalysis = () => {
                               <span className="text-muted-foreground">{opp.suggestion}</span>
                             </p>
                           </div>
-                          <Button size="sm" className="bg-blue-500 hover:bg-blue-600 flex-shrink-0">
+                          <Button size="sm" className="bg-blue-500 hover:bg-blue-600 flex-shrink-0 w-full md:w-auto">
                             <Plus className="w-4 h-4 mr-1" />
                             צור קהל
                           </Button>
