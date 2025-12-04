@@ -155,44 +155,51 @@ const Insights = () => {
           <TabsContent value="audience" className="space-y-4 md:space-y-6">
             <div className="grid gap-4 md:gap-6 md:grid-cols-2">
               {/* Age Breakdown */}
-              <Card className="shadow-card">
-                <CardHeader>
-                  <CardTitle>Performance by Age Group</CardTitle>
-                  <CardDescription>Impressions, clicks, and conversions breakdown</CardDescription>
+              <Card className="shadow-card overflow-hidden">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base md:text-lg">Performance by Age Group</CardTitle>
+                  <CardDescription className="text-xs md:text-sm">Impressions, clicks, and conversions breakdown</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ChartContainer config={chartConfig} className="h-[300px]">
-                    <BarChart data={audienceByAge}>
+                <CardContent className="p-2 md:p-6">
+                  <ChartContainer config={chartConfig} className="h-[250px] md:h-[300px] w-full">
+                    <BarChart data={audienceByAge} margin={isMobile ? { left: -20, right: 5 } : { left: 0, right: 10 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="age" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis stroke="hsl(var(--muted-foreground))" />
+                      <XAxis dataKey="age" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: isMobile ? 10 : 12 }} />
+                      <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: isMobile ? 10 : 12 }} width={isMobile ? 35 : 60} />
                       <ChartTooltip content={<ChartTooltipContent />} />
-                      <Legend />
+                      {!isMobile && <Legend />}
                       <Bar dataKey="impressions" fill="hsl(217, 91%, 60%)" name="Impressions" />
                       <Bar dataKey="clicks" fill="hsl(142, 76%, 36%)" name="Clicks" />
                       <Bar dataKey="conversions" fill="hsl(var(--accent))" name="Conversions" />
                     </BarChart>
                   </ChartContainer>
+                  {isMobile && (
+                    <div className="flex flex-wrap justify-center gap-3 mt-2 text-xs">
+                      <div className="flex items-center gap-1"><span className="w-3 h-3 rounded" style={{ background: 'hsl(217, 91%, 60%)' }} />Impressions</div>
+                      <div className="flex items-center gap-1"><span className="w-3 h-3 rounded" style={{ background: 'hsl(142, 76%, 36%)' }} />Clicks</div>
+                      <div className="flex items-center gap-1"><span className="w-3 h-3 rounded" style={{ background: 'hsl(var(--accent))' }} />Conversions</div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
               {/* Gender Breakdown */}
-              <Card className="shadow-card">
-                <CardHeader>
-                  <CardTitle>Performance by Gender</CardTitle>
-                  <CardDescription>Gender distribution and engagement</CardDescription>
+              <Card className="shadow-card overflow-hidden">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base md:text-lg">Performance by Gender</CardTitle>
+                  <CardDescription className="text-xs md:text-sm">Gender distribution and engagement</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ChartContainer config={chartConfig} className="h-[300px]">
-                    <PieChart>
+                <CardContent className="p-2 md:p-6">
+                  <ChartContainer config={chartConfig} className="h-[200px] md:h-[300px] w-full">
+                    <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
                       <Pie
                         data={audienceByGender}
                         dataKey="impressions"
                         nameKey="gender"
                         cx="50%"
                         cy="50%"
-                        outerRadius={100}
-                        label={(entry) => `${entry.gender}: ${((entry.impressions / 99400) * 100).toFixed(1)}%`}
+                        outerRadius={isMobile ? 60 : 100}
+                        label={isMobile ? false : (entry) => `${entry.gender}: ${((entry.impressions / 99400) * 100).toFixed(1)}%`}
                       >
                         <Cell fill="hsl(217, 91%, 60%)" />
                         <Cell fill="hsl(262, 83%, 58%)" />
@@ -200,6 +207,12 @@ const Insights = () => {
                       <ChartTooltip content={<ChartTooltipContent />} />
                     </PieChart>
                   </ChartContainer>
+                  {isMobile && (
+                    <div className="flex justify-center gap-4 mt-2 text-xs">
+                      <div className="flex items-center gap-1"><span className="w-3 h-3 rounded" style={{ background: 'hsl(217, 91%, 60%)' }} />Male: 52.7%</div>
+                      <div className="flex items-center gap-1"><span className="w-3 h-3 rounded" style={{ background: 'hsl(262, 83%, 58%)' }} />Female: 47.3%</div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
