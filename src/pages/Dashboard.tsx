@@ -265,43 +265,50 @@ const Dashboard = () => {
         {/* Main Charts Grid */}
         <div className="grid gap-4 md:gap-6 lg:grid-cols-2 mb-6 md:mb-8">
           {/* Performance Trends */}
-          <Card className="shadow-card">
-            <CardHeader>
-              <CardTitle>Performance Trends</CardTitle>
-              <CardDescription>Daily metrics over the last 7 days</CardDescription>
+          <Card className="shadow-card overflow-hidden">
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="text-base md:text-lg">Performance Trends</CardTitle>
+              <CardDescription className="text-xs md:text-sm">Daily metrics over the last 7 days</CardDescription>
             </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="h-[300px]">
-                <LineChart data={performanceData}>
+            <CardContent className="p-2 md:p-6 pt-0">
+              <ChartContainer config={chartConfig} className="h-[200px] md:h-[300px] w-full">
+                <LineChart data={performanceData} margin={{ top: 5, right: 5, left: isMobile ? -20 : 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis stroke="hsl(var(--muted-foreground))" />
+                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: isMobile ? 10 : 12 }} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: isMobile ? 10 : 12 }} width={isMobile ? 30 : 60} />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <Legend />
-                  <Line type="monotone" dataKey="impressions" stroke="hsl(var(--primary))" strokeWidth={2} />
-                  <Line type="monotone" dataKey="clicks" stroke="hsl(var(--accent))" strokeWidth={2} />
-                  <Line type="monotone" dataKey="conversions" stroke="hsl(var(--success))" strokeWidth={2} />
+                  {!isMobile && <Legend />}
+                  <Line type="monotone" dataKey="impressions" stroke="hsl(var(--primary))" strokeWidth={2} dot={!isMobile} />
+                  <Line type="monotone" dataKey="clicks" stroke="hsl(var(--accent))" strokeWidth={2} dot={!isMobile} />
+                  <Line type="monotone" dataKey="conversions" stroke="hsl(var(--success))" strokeWidth={2} dot={!isMobile} />
                 </LineChart>
               </ChartContainer>
+              {isMobile && (
+                <div className="flex justify-center gap-4 mt-2 text-xs">
+                  <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary" />Impressions</div>
+                  <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-accent" />Clicks</div>
+                  <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" />Conversions</div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
           {/* Spend Distribution */}
-          <Card className="shadow-card">
-            <CardHeader>
-              <CardTitle>Campaign Spend Distribution</CardTitle>
-              <CardDescription>Budget allocation across campaigns</CardDescription>
+          <Card className="shadow-card overflow-hidden">
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="text-base md:text-lg">Campaign Spend Distribution</CardTitle>
+              <CardDescription className="text-xs md:text-sm">Budget allocation across campaigns</CardDescription>
             </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="h-[300px]">
-                <PieChart>
+            <CardContent className="p-2 md:p-6 pt-0">
+              <ChartContainer config={chartConfig} className="h-[200px] md:h-[300px] w-full">
+                <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                   <Pie
                     data={campaignDistribution}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percentage }) => `${name} ${percentage}%`}
-                    outerRadius={100}
+                    label={isMobile ? ({ percentage }) => `${percentage}%` : ({ name, percentage }) => `${name} ${percentage}%`}
+                    outerRadius={isMobile ? 60 : 100}
                     fill="hsl(var(--primary))"
                     dataKey="value"
                   >
@@ -321,6 +328,16 @@ const Dashboard = () => {
                   <ChartTooltip content={<ChartTooltipContent />} />
                 </PieChart>
               </ChartContainer>
+              {isMobile && (
+                <div className="flex flex-wrap justify-center gap-3 mt-2 text-xs">
+                  {campaignDistribution.map((item, index) => (
+                    <div key={item.name} className="flex items-center gap-1">
+                      <span className={`w-2 h-2 rounded-full ${index === 0 ? 'bg-primary' : index === 1 ? 'bg-accent' : 'bg-success'}`} />
+                      {item.name}
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
