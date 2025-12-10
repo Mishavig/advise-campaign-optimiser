@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,10 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { supabase } from "@/integrations/supabase/client";
 import {
   Search,
   ArrowUpDown,
@@ -19,16 +18,12 @@ import {
   TrendingDown,
   Play,
   Pause,
-  ChevronLeft,
-  BarChart3,
-  Target,
-  LineChart,
-  Sparkles,
-  Loader2,
-  AlertCircle,
-  CheckCircle2,
+  ChevronRight,
 } from "lucide-react";
 import CampaignHierarchy from "@/components/CampaignHierarchy";
+import { CampaignHealthScore } from "@/components/CampaignHealthScore";
+import { CampaignSmartTags, getSmartTagsForCampaign } from "@/components/CampaignSmartTags";
+import { CampaignSparkline } from "@/components/CampaignSparkline";
 
 // Mock data for campaigns table view with comprehensive Facebook data
 const mockCampaignsTable = [
@@ -70,6 +65,10 @@ const mockCampaignsTable = [
     specialAdCategories: [],
     issuesInfo: null,
     recommendations: [{ title: "Increase budget", confidence: "HIGH" }],
+    // New fields for redesign
+    healthScore: 85,
+    sparklineData: [12, 14, 13, 15, 14, 16, 15],
+    sparklineTrend: "up" as const,
   },
   {
     id: "2",
@@ -109,6 +108,9 @@ const mockCampaignsTable = [
     specialAdCategories: [],
     issuesInfo: null,
     recommendations: [{ title: "Optimize targeting", confidence: "MEDIUM" }],
+    healthScore: 72,
+    sparklineData: [18, 17, 16, 15, 16, 15, 14],
+    sparklineTrend: "down" as const,
   },
   {
     id: "3",
@@ -148,6 +150,9 @@ const mockCampaignsTable = [
     specialAdCategories: [],
     issuesInfo: { level: "WARNING", message: "Low engagement rate" },
     recommendations: [{ title: "Refresh creative", confidence: "HIGH" }],
+    healthScore: 42,
+    sparklineData: [22, 24, 25, 26, 28, 27, 29],
+    sparklineTrend: "down" as const,
   },
   {
     id: "4",
@@ -187,6 +192,9 @@ const mockCampaignsTable = [
     specialAdCategories: [],
     issuesInfo: null,
     recommendations: [{ title: "Scale budget", confidence: "HIGH" }],
+    healthScore: 92,
+    sparklineData: [8, 9, 8, 10, 9, 10, 9],
+    sparklineTrend: "up" as const,
   },
 ];
 
@@ -248,13 +256,9 @@ const Campaigns = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [performanceFilter, setPerformanceFilter] = useState("all");
   const [sortBy, setSortBy] = useState("name");
-  const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
-  const [analysisOpen, setAnalysisOpen] = useState(false);
-  const [analysisLoading, setAnalysisLoading] = useState(false);
-  const [analysisData, setAnalysisData] = useState<any>(null);
-  const [analysisMode, setAnalysisMode] = useState<"full" | "short">("full");
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -267,21 +271,6 @@ const Campaigns = () => {
         {status === "active" && <Play className="w-3 h-3 mr-1" />}
         {status === "paused" && <Pause className="w-3 h-3 mr-1" />}
         {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
-  };
-
-  const getPerformanceBadge = (performance: string) => {
-    const config = {
-      excellent: { variant: "default", icon: TrendingUp },
-      good: { variant: "secondary", icon: TrendingUp },
-      average: { variant: "outline", icon: TrendingDown },
-    };
-    const { variant, icon: Icon } = config[performance as keyof typeof config];
-    return (
-      <Badge variant={variant as any} className="gap-1">
-        <Icon className="w-3 h-3" />
-        {performance.charAt(0).toUpperCase() + performance.slice(1)}
       </Badge>
     );
   };
@@ -300,45 +289,12 @@ const Campaigns = () => {
       return 0;
     });
 
-  const handleAnalyzeCampaign = async (campaign: any) => {
-    setSelectedCampaign(campaign);
-    setAnalysisOpen(true);
-    setAnalysisLoading(true);
-    setAnalysisData(null);
-
-    try {
-      const { data, error } = await supabase.functions.invoke('analyze-campaign', {
-        body: { campaign, mode: analysisMode }
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      if (data.error) {
-        toast({
-          title: "Analysis Failed",
-          description: data.error,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setAnalysisData(data.analysis);
-      toast({
-        title: "Analysis Complete",
-        description: "AI has analyzed your campaign performance",
-      });
-    } catch (error) {
-      console.error('Analysis error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to analyze campaign. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setAnalysisLoading(false);
-    }
+  const handleCampaignClick = (campaignId: string) => {
+    navigate(`/audience-analysis?campaign=${campaignId}`);
+    toast({
+      title: "ניווט לניתוח קהלים",
+      description: "טוען את נתוני הקמפיין...",
+    });
   };
 
   return (
@@ -420,53 +376,63 @@ const Campaigns = () => {
                 {isMobile ? (
                   /* Mobile Card View */
                   <div className="space-y-3">
-                    {filteredCampaigns.map((campaign) => (
-                      <Card key={campaign.id} className="p-4">
-                        <div className="space-y-3">
-                          <div className="flex items-start justify-between gap-2">
-                            <h3 className="font-semibold text-base">{campaign.name}</h3>
-                            {getStatusBadge(campaign.status)}
-                          </div>
-                          
-                          <div className="grid grid-cols-2 gap-3 text-sm">
-                            <div>
-                              <p className="text-muted-foreground text-xs">Budget</p>
-                              <p className="font-medium">${campaign.budget.toLocaleString()}</p>
+                    {filteredCampaigns.map((campaign) => {
+                      const smartTags = getSmartTagsForCampaign(campaign);
+                      return (
+                        <Card 
+                          key={campaign.id} 
+                          className="p-4 cursor-pointer hover:bg-muted/50 transition-colors"
+                          onClick={() => handleCampaignClick(campaign.id)}
+                        >
+                          <div className="space-y-3">
+                            {/* Header with name, health score, and status */}
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="font-semibold text-base truncate">{campaign.name}</h3>
+                                  <CampaignHealthScore score={campaign.healthScore} size="sm" />
+                                </div>
+                                <CampaignSmartTags tags={smartTags} />
+                              </div>
+                              {getStatusBadge(campaign.status)}
                             </div>
-                            <div>
-                              <p className="text-muted-foreground text-xs">Spent</p>
-                              <p className="font-medium">${campaign.spent.toLocaleString()}</p>
+                            
+                            {/* Sparkline */}
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <span>מגמת 7 ימים:</span>
+                              <CampaignSparkline 
+                                data={campaign.sparklineData} 
+                                trend={campaign.sparklineTrend}
+                                width={50}
+                                height={16}
+                              />
                             </div>
-                            <div>
-                              <p className="text-muted-foreground text-xs">Clicks</p>
-                              <p className="font-medium">{campaign.clicks.toLocaleString()}</p>
+                            
+                            {/* Metrics grid */}
+                            <div className="grid grid-cols-3 gap-3 text-sm">
+                              <div>
+                                <p className="text-muted-foreground text-xs">Spent</p>
+                                <p className="font-medium">${campaign.spent.toLocaleString()}</p>
+                              </div>
+                              <div>
+                                <p className="text-muted-foreground text-xs">CTR</p>
+                                <p className="font-medium">{campaign.ctr.toFixed(2)}%</p>
+                              </div>
+                              <div>
+                                <p className="text-muted-foreground text-xs">ROAS</p>
+                                <p className="font-medium">{campaign.roas.toFixed(1)}x</p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-muted-foreground text-xs">CTR</p>
-                              <p className="font-medium">{campaign.ctr.toFixed(2)}%</p>
-                            </div>
-                            <div>
-                              <p className="text-muted-foreground text-xs">ROAS</p>
-                              <p className="font-medium">{campaign.roas.toFixed(1)}x</p>
-                            </div>
-                            <div>
-                              <p className="text-muted-foreground text-xs">Performance</p>
-                              {getPerformanceBadge(campaign.performance)}
-                            </div>
-                          </div>
 
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            className="w-full"
-                            onClick={() => handleAnalyzeCampaign(campaign)}
-                          >
-                            <Sparkles className="w-4 h-4 mr-1" />
-                            Analyze with AI
-                          </Button>
-                        </div>
-                      </Card>
-                    ))}
+                            {/* View details button */}
+                            <div className="flex items-center justify-end text-sm text-primary">
+                              <span>צפה בניתוח קהלים</span>
+                              <ChevronRight className="w-4 h-4" />
+                            </div>
+                          </div>
+                        </Card>
+                      );
+                    })}
                   </div>
                 ) : (
                   /* Desktop Table View */
@@ -475,41 +441,49 @@ const Campaigns = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead>Campaign</TableHead>
+                          <TableHead className="text-center">Health</TableHead>
                           <TableHead>Status</TableHead>
-                          <TableHead className="text-right">Budget</TableHead>
                           <TableHead className="text-right">Spent</TableHead>
-                          <TableHead className="text-right">Impressions</TableHead>
-                          <TableHead className="text-right">Clicks</TableHead>
-                          <TableHead className="text-right">CTR</TableHead>
                           <TableHead className="text-right">ROAS</TableHead>
-                          <TableHead>Performance</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
+                          <TableHead className="text-right">CTR</TableHead>
+                          <TableHead className="text-center">7-Day Trend</TableHead>
+                          <TableHead></TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filteredCampaigns.map((campaign) => (
-                          <TableRow key={campaign.id}>
-                            <TableCell className="font-medium">{campaign.name}</TableCell>
-                            <TableCell>{getStatusBadge(campaign.status)}</TableCell>
-                            <TableCell className="text-right">${campaign.budget.toLocaleString()}</TableCell>
-                            <TableCell className="text-right">${campaign.spent.toLocaleString()}</TableCell>
-                            <TableCell className="text-right">{campaign.impressions.toLocaleString()}</TableCell>
-                            <TableCell className="text-right">{campaign.clicks.toLocaleString()}</TableCell>
-                            <TableCell className="text-right">{campaign.ctr.toFixed(2)}%</TableCell>
-                            <TableCell className="text-right">{campaign.roas.toFixed(1)}x</TableCell>
-                            <TableCell>{getPerformanceBadge(campaign.performance)}</TableCell>
-                            <TableCell className="text-right">
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                onClick={() => handleAnalyzeCampaign(campaign)}
-                              >
-                                <Sparkles className="w-4 h-4 mr-1" />
-                                Analyze with AI
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {filteredCampaigns.map((campaign) => {
+                          const smartTags = getSmartTagsForCampaign(campaign);
+                          return (
+                            <TableRow 
+                              key={campaign.id}
+                              className="cursor-pointer hover:bg-muted/50 transition-colors"
+                              onClick={() => handleCampaignClick(campaign.id)}
+                            >
+                              <TableCell>
+                                <div className="space-y-1">
+                                  <span className="font-medium">{campaign.name}</span>
+                                  <CampaignSmartTags tags={smartTags} />
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-center">
+                                <CampaignHealthScore score={campaign.healthScore} />
+                              </TableCell>
+                              <TableCell>{getStatusBadge(campaign.status)}</TableCell>
+                              <TableCell className="text-right">${campaign.spent.toLocaleString()}</TableCell>
+                              <TableCell className="text-right font-medium">{campaign.roas.toFixed(1)}x</TableCell>
+                              <TableCell className="text-right">{campaign.ctr.toFixed(2)}%</TableCell>
+                              <TableCell className="text-center">
+                                <CampaignSparkline 
+                                  data={campaign.sparklineData} 
+                                  trend={campaign.sparklineTrend}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   </div>
@@ -523,171 +497,6 @@ const Campaigns = () => {
           </TabsContent>
         </Tabs>
       </div>
-
-      {/* AI Analysis Dialog */}
-      <Dialog open={analysisOpen} onOpenChange={setAnalysisOpen}>
-        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto sm:max-h-[80vh]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              AI Campaign Analysis: {selectedCampaign?.name}
-            </DialogTitle>
-            <DialogDescription>
-              Advanced AI insights and optimization recommendations
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            {/* Analysis Mode Selector */}
-            <div className="flex flex-wrap gap-2">
-              <Button
-                size="sm"
-                variant={analysisMode === "full" ? "default" : "outline"}
-                onClick={() => setAnalysisMode("full")}
-                disabled={analysisLoading}
-                className="flex-1 sm:flex-none"
-              >
-                Full Analysis
-              </Button>
-              <Button
-                size="sm"
-                variant={analysisMode === "short" ? "default" : "outline"}
-                onClick={() => setAnalysisMode("short")}
-                disabled={analysisLoading}
-                className="flex-1 sm:flex-none"
-              >
-                Quick Summary
-              </Button>
-              {!analysisLoading && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleAnalyzeCampaign(selectedCampaign)}
-                  className="w-full sm:w-auto sm:ml-auto"
-                >
-                  <Sparkles className="w-4 h-4 mr-1" />
-                  Re-analyze
-                </Button>
-              )}
-            </div>
-
-            {/* Loading State */}
-            {analysisLoading && (
-              <Card className="p-8">
-                <div className="flex flex-col items-center justify-center gap-4">
-                  <Loader2 className="w-12 h-12 animate-spin text-primary" />
-                  <p className="text-lg font-medium">Analyzing campaign performance...</p>
-                  <p className="text-sm text-muted-foreground">AI is processing your campaign data</p>
-                </div>
-              </Card>
-            )}
-
-            {/* Analysis Results */}
-            {!analysisLoading && analysisData && (
-              <div className="space-y-4">
-                {/* Summary */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Executive Summary</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">{analysisData.summary}</p>
-                    {analysisData.predicted_roas_improvement && (
-                      <div className="mt-4 p-3 bg-primary/10 rounded-lg">
-                        <p className="text-sm font-medium">
-                          Predicted ROAS Improvement: <span className="text-primary text-lg">{analysisData.predicted_roas_improvement}</span>
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-
-                {/* Insights */}
-                {analysisData.insights && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Key Insights</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {analysisData.insights.strengths?.length > 0 && (
-                        <div>
-                          <h4 className="font-medium text-green-600 mb-2 flex items-center gap-2">
-                            <CheckCircle2 className="w-4 h-4" />
-                            Strengths
-                          </h4>
-                          <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-6">
-                            {analysisData.insights.strengths.map((strength: string, idx: number) => (
-                              <li key={idx}>{strength}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      {analysisData.insights.weaknesses?.length > 0 && (
-                        <div>
-                          <h4 className="font-medium text-orange-600 mb-2 flex items-center gap-2">
-                            <AlertCircle className="w-4 h-4" />
-                            Areas for Improvement
-                          </h4>
-                          <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-6">
-                            {analysisData.insights.weaknesses.map((weakness: string, idx: number) => (
-                              <li key={idx}>{weakness}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      {analysisData.insights.opportunities?.length > 0 && (
-                        <div>
-                          <h4 className="font-medium text-blue-600 mb-2 flex items-center gap-2">
-                            <TrendingUp className="w-4 h-4" />
-                            Opportunities
-                          </h4>
-                          <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-6">
-                            {analysisData.insights.opportunities.map((opportunity: string, idx: number) => (
-                              <li key={idx}>{opportunity}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Recommendations */}
-                {analysisData.recommendations?.length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Action Recommendations</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        {analysisData.recommendations.map((rec: any, idx: number) => (
-                          <div key={idx} className="p-4 border rounded-lg space-y-2">
-                            <div className="flex items-start justify-between gap-2">
-                              <h5 className="font-medium">{rec.action}</h5>
-                              <Badge variant={
-                                rec.priority === "high" ? "destructive" :
-                                rec.priority === "medium" ? "default" :
-                                "secondary"
-                              }>
-                                {rec.priority}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground"><strong>Target:</strong> {rec.target}</p>
-                            <p className="text-sm text-muted-foreground"><strong>Reason:</strong> {rec.reason}</p>
-                            {rec.expected_impact && (
-                              <p className="text-sm text-primary"><strong>Expected Impact:</strong> {rec.expected_impact}</p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
