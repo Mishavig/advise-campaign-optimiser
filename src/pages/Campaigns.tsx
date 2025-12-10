@@ -1,72 +1,93 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo } from "react";
 import { Navigation } from "@/components/Navigation";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
-import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  Search,
-  ArrowUpDown,
-  Filter,
-  TrendingUp,
-  TrendingDown,
-  Play,
-  Pause,
-  ChevronRight,
-} from "lucide-react";
+import { Search, ArrowUpDown, Filter, Cpu } from "lucide-react";
 import CampaignHierarchy from "@/components/CampaignHierarchy";
-import { CampaignHealthScore } from "@/components/CampaignHealthScore";
-import { CampaignSmartTags, getSmartTagsForCampaign } from "@/components/CampaignSmartTags";
-import { CampaignSparkline } from "@/components/CampaignSparkline";
+import { CommandCenterHeader } from "@/components/campaigns/CommandCenterHeader";
+import { CampaignRow } from "@/components/campaigns/CampaignRow";
+import { CampaignListSkeleton } from "@/components/campaigns/CampaignListSkeleton";
+import { TagType } from "@/components/campaigns/SmartTagPill";
 
-// Mock data for campaigns table view with comprehensive Facebook data
+interface SmartTag {
+  type: TagType;
+  label: string;
+  emoji: string;
+}
+
+// Helper function to generate smart tags based on campaign metrics
+const getSmartTagsForCampaign = (campaign: {
+  roas: number;
+  cpc: number;
+  ctr: number;
+  frequency?: number;
+  performance: string;
+  cpa: number;
+  objective?: string;
+}): SmartTag[] => {
+  const tags: SmartTag[] = [];
+
+  // Scalable - high ROAS and good performance
+  if (campaign.roas >= 4 && campaign.performance === "excellent") {
+    tags.push({ type: "scalable", label: "Scalable", emoji: "💎" });
+  }
+
+  // High ROAS indicator
+  if (campaign.roas >= 5) {
+    tags.push({ type: "highRoas", label: "High ROAS", emoji: "⭐" });
+  }
+
+  // Traffic Mode warning
+  if (campaign.objective === "TRAFFIC") {
+    tags.push({ type: "traffic", label: "Traffic Mode", emoji: "⚠️" });
+  }
+
+  // Creative Fatigue - high frequency
+  if (campaign.frequency && campaign.frequency > 3) {
+    tags.push({ type: "fatigue", label: "Fatigue", emoji: "😴" });
+  }
+
+  // High CPC warning
+  if (campaign.cpc > 1.5) {
+    tags.push({ type: "highCpc", label: "High CPC", emoji: "💰" });
+  }
+
+  // Low CTR warning
+  if (campaign.ctr < 1.5) {
+    tags.push({ type: "lowCtr", label: "Low CTR", emoji: "👀" });
+  }
+
+  // Bleeding - high CPA and low ROAS
+  if (campaign.cpa > 15 && campaign.roas < 2.5) {
+    tags.push({ type: "bleeding", label: "Bleeding", emoji: "🩸" });
+  }
+
+  return tags.slice(0, 3);
+};
+
+// Mock data for campaigns
 const mockCampaignsTable = [
   {
     id: "1",
     name: "Summer Sale 2024",
     status: "active",
     objective: "CONVERSIONS",
-    bidStrategy: "LOWEST_COST_WITHOUT_CAP",
-    buyingType: "AUCTION",
+    platform: "facebook" as const,
     budget: 5000,
-    dailyBudget: 500,
-    lifetimeBudget: null,
     spent: 3245.67,
-    spendCap: 10000,
     impressions: 125000,
     clicks: 3450,
     conversions: 234,
-    reach: 98000,
     frequency: 1.28,
     ctr: 2.76,
     cpc: 0.94,
-    cpm: 25.97,
-    cpp: 33.12,
     cpa: 13.87,
     roas: 4.2,
-    actions: { link_clicks: 3200, post_reactions: 450, video_views: 1200 },
-    videoPlays: 1200,
-    videoAvgPlayTime: 8.5,
-    linkClicks: 3200,
-    postReactions: 450,
-    postComments: 78,
-    postShares: 92,
     performance: "excellent",
-    startTime: "2024-01-01T00:00:00Z",
-    stopTime: null,
-    createdTime: "2023-12-15T10:30:00Z",
-    updatedTime: "2024-01-10T14:22:00Z",
-    specialAdCategories: [],
-    issuesInfo: null,
-    recommendations: [{ title: "Increase budget", confidence: "HIGH" }],
-    // New fields for redesign
     healthScore: 85,
+    potentialSavings: 850,
     sparklineData: [12, 14, 13, 15, 14, 16, 15],
     sparklineTrend: "up" as const,
   },
@@ -75,40 +96,20 @@ const mockCampaignsTable = [
     name: "Product Launch Campaign",
     status: "active",
     objective: "TRAFFIC",
-    bidStrategy: "COST_CAP",
-    buyingType: "AUCTION",
+    platform: "instagram" as const,
     budget: 8000,
-    dailyBudget: 800,
-    lifetimeBudget: null,
     spent: 6890.23,
-    spendCap: 15000,
     impressions: 245000,
     clicks: 5670,
     conversions: 445,
-    reach: 189000,
     frequency: 1.30,
     ctr: 2.31,
     cpc: 1.22,
-    cpm: 28.12,
-    cpp: 36.46,
     cpa: 15.48,
     roas: 3.8,
-    actions: { link_clicks: 5200, post_reactions: 890, video_views: 3400 },
-    videoPlays: 3400,
-    videoAvgPlayTime: 12.3,
-    linkClicks: 5200,
-    postReactions: 890,
-    postComments: 156,
-    postShares: 203,
     performance: "good",
-    startTime: "2024-01-05T00:00:00Z",
-    stopTime: null,
-    createdTime: "2023-12-20T09:15:00Z",
-    updatedTime: "2024-01-10T16:45:00Z",
-    specialAdCategories: [],
-    issuesInfo: null,
-    recommendations: [{ title: "Optimize targeting", confidence: "MEDIUM" }],
     healthScore: 72,
+    potentialSavings: 1200,
     sparklineData: [18, 17, 16, 15, 16, 15, 14],
     sparklineTrend: "down" as const,
   },
@@ -117,40 +118,20 @@ const mockCampaignsTable = [
     name: "Brand Awareness Q2",
     status: "paused",
     objective: "BRAND_AWARENESS",
-    bidStrategy: "LOWEST_COST_WITHOUT_CAP",
-    buyingType: "AUCTION",
+    platform: "meta" as const,
     budget: 3000,
-    dailyBudget: null,
-    lifetimeBudget: 3000,
     spent: 1245.89,
-    spendCap: null,
     impressions: 89000,
     clicks: 1234,
     conversions: 67,
-    reach: 72000,
     frequency: 1.24,
     ctr: 1.39,
     cpc: 1.01,
-    cpm: 14.00,
-    cpp: 17.30,
     cpa: 18.60,
     roas: 2.1,
-    actions: { link_clicks: 1100, post_reactions: 245, video_views: 450 },
-    videoPlays: 450,
-    videoAvgPlayTime: 5.2,
-    linkClicks: 1100,
-    postReactions: 245,
-    postComments: 34,
-    postShares: 28,
     performance: "average",
-    startTime: "2024-01-01T00:00:00Z",
-    stopTime: "2024-01-08T23:59:59Z",
-    createdTime: "2023-12-10T11:00:00Z",
-    updatedTime: "2024-01-08T18:30:00Z",
-    specialAdCategories: [],
-    issuesInfo: { level: "WARNING", message: "Low engagement rate" },
-    recommendations: [{ title: "Refresh creative", confidence: "HIGH" }],
     healthScore: 42,
+    potentialSavings: 580,
     sparklineData: [22, 24, 25, 26, 28, 27, 29],
     sparklineTrend: "down" as const,
   },
@@ -159,42 +140,44 @@ const mockCampaignsTable = [
     name: "Retargeting Campaign",
     status: "active",
     objective: "CONVERSIONS",
-    bidStrategy: "LOWEST_COST_WITH_BID_CAP",
-    buyingType: "AUCTION",
+    platform: "facebook" as const,
     budget: 2500,
-    dailyBudget: 250,
-    lifetimeBudget: null,
     spent: 1876.34,
-    spendCap: 5000,
     impressions: 67000,
     clicks: 2340,
     conversions: 189,
-    reach: 54000,
     frequency: 1.24,
     ctr: 3.49,
     cpc: 0.80,
-    cpm: 28.00,
-    cpp: 34.75,
     cpa: 9.93,
     roas: 5.6,
-    actions: { link_clicks: 2200, post_reactions: 345, video_views: 890 },
-    videoPlays: 890,
-    videoAvgPlayTime: 9.8,
-    linkClicks: 2200,
-    postReactions: 345,
-    postComments: 67,
-    postShares: 45,
     performance: "excellent",
-    startTime: "2024-01-03T00:00:00Z",
-    stopTime: null,
-    createdTime: "2023-12-28T14:20:00Z",
-    updatedTime: "2024-01-10T12:10:00Z",
-    specialAdCategories: [],
-    issuesInfo: null,
-    recommendations: [{ title: "Scale budget", confidence: "HIGH" }],
     healthScore: 92,
+    potentialSavings: 420,
     sparklineData: [8, 9, 8, 10, 9, 10, 9],
     sparklineTrend: "up" as const,
+  },
+  {
+    id: "5",
+    name: "Holiday Promo 2024",
+    status: "active",
+    objective: "CONVERSIONS",
+    platform: "instagram" as const,
+    budget: 4500,
+    spent: 2890.45,
+    impressions: 98000,
+    clicks: 2890,
+    conversions: 156,
+    frequency: 2.1,
+    ctr: 2.95,
+    cpc: 1.00,
+    cpa: 18.52,
+    roas: 2.3,
+    performance: "average",
+    healthScore: 38,
+    potentialSavings: 1200,
+    sparklineData: [14, 16, 18, 20, 22, 24, 26],
+    sparklineTrend: "down" as const,
   },
 ];
 
@@ -254,242 +237,148 @@ const mockCampaignsHierarchy = [
 const Campaigns = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [performanceFilter, setPerformanceFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("name");
-  const { toast } = useToast();
-  const isMobile = useIsMobile();
-  const navigate = useNavigate();
+  const [healthFilter, setHealthFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("health");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      active: "default",
-      paused: "secondary",
-      ended: "outline",
-    };
-    return (
-      <Badge variant={variants[status as keyof typeof variants] as any}>
-        {status === "active" && <Play className="w-3 h-3 mr-1" />}
-        {status === "paused" && <Pause className="w-3 h-3 mr-1" />}
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
-  };
+  // Calculate header stats
+  const headerStats = useMemo(() => {
+    const opportunityValue = mockCampaignsTable.reduce((sum, c) => sum + c.potentialSavings, 0);
+    const criticalCount = mockCampaignsTable.filter((c) => c.healthScore < 50).length;
+    const scalableCount = mockCampaignsTable.filter(
+      (c) => c.roas >= 4 && c.performance === "excellent"
+    ).length;
 
-  const filteredCampaigns = mockCampaignsTable
-    .filter((campaign) => {
-      const matchesSearch = campaign.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === "all" || campaign.status === statusFilter;
-      const matchesPerformance = performanceFilter === "all" || campaign.performance === performanceFilter;
-      return matchesSearch && matchesStatus && matchesPerformance;
-    })
-    .sort((a, b) => {
-      if (sortBy === "name") return a.name.localeCompare(b.name);
-      if (sortBy === "spent") return b.spent - a.spent;
-      if (sortBy === "roas") return b.roas - a.roas;
-      return 0;
-    });
+    return { opportunityValue, criticalCount, scalableCount };
+  }, []);
 
-  const handleCampaignClick = (campaignId: string) => {
-    navigate(`/audience-analysis?campaign=${campaignId}`);
-    toast({
-      title: "ניווט לניתוח קהלים",
-      description: "טוען את נתוני הקמפיין...",
-    });
-  };
+  // Filter and sort campaigns
+  const filteredCampaigns = useMemo(() => {
+    return mockCampaignsTable
+      .filter((campaign) => {
+        const matchesSearch = campaign.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesStatus = statusFilter === "all" || campaign.status === statusFilter;
+        const matchesHealth =
+          healthFilter === "all" ||
+          (healthFilter === "critical" && campaign.healthScore < 50) ||
+          (healthFilter === "warning" && campaign.healthScore >= 50 && campaign.healthScore < 80) ||
+          (healthFilter === "healthy" && campaign.healthScore >= 80);
+        return matchesSearch && matchesStatus && matchesHealth;
+      })
+      .sort((a, b) => {
+        if (sortBy === "name") return a.name.localeCompare(b.name);
+        if (sortBy === "spent") return b.spent - a.spent;
+        if (sortBy === "health") return b.healthScore - a.healthScore;
+        if (sortBy === "roas") return b.roas - a.roas;
+        return 0;
+      });
+  }, [searchQuery, statusFilter, healthFilter, sortBy]);
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
+      <div className="container mx-auto p-4 md:p-6 space-y-6">
         {/* Page Title */}
-        <div className="flex flex-col gap-2">
-          <h2 className="text-2xl md:text-3xl font-bold">Campaign Management</h2>
-          <p className="text-sm md:text-base text-muted-foreground">Monitor and optimize all your advertising campaigns</p>
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-primary/10">
+            <Cpu className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">AI Command Center</h1>
+            <p className="text-sm text-muted-foreground">Zero-Click Intelligence Dashboard</p>
+          </div>
         </div>
 
+        {/* Header Stats Cards */}
+        <CommandCenterHeader stats={headerStats} />
+
         {/* Filters */}
-        <Card>
-            <CardContent className="p-4">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search campaigns..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9"
-                  />
-                </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-full md:w-[160px]">
-                    <Filter className="w-4 h-4 mr-2" />
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="paused">Paused</SelectItem>
-                    <SelectItem value="ended">Ended</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={performanceFilter} onValueChange={setPerformanceFilter}>
-                  <SelectTrigger className="w-full md:w-[160px]">
-                    <Filter className="w-4 h-4 mr-2" />
-                    <SelectValue placeholder="Performance" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Performance</SelectItem>
-                    <SelectItem value="excellent">Excellent</SelectItem>
-                    <SelectItem value="good">Good</SelectItem>
-                    <SelectItem value="average">Average</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-full md:w-[160px]">
-                    <ArrowUpDown className="w-4 h-4 mr-2" />
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="name">Name</SelectItem>
-                    <SelectItem value="spent">Spend</SelectItem>
-                    <SelectItem value="roas">ROAS</SelectItem>
-                  </SelectContent>
-                </Select>
+        <Card className="glass-card border-border/50">
+          <CardContent className="p-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search campaigns..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 bg-background/50"
+                />
               </div>
-            </CardContent>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full md:w-[160px] bg-background/50">
+                  <Filter className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="paused">Paused</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={healthFilter} onValueChange={setHealthFilter}>
+                <SelectTrigger className="w-full md:w-[160px] bg-background/50">
+                  <Filter className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Health" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Health</SelectItem>
+                  <SelectItem value="critical">🔴 Critical (&lt;50)</SelectItem>
+                  <SelectItem value="warning">🟡 Warning (50-80)</SelectItem>
+                  <SelectItem value="healthy">🟢 Healthy (&gt;80)</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-full md:w-[160px] bg-background/50">
+                  <ArrowUpDown className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="health">Health Score</SelectItem>
+                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="spent">Spend</SelectItem>
+                  <SelectItem value="roas">ROAS</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
         </Card>
 
         {/* Campaign Views */}
-        <Tabs defaultValue="table" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="table">Table View</TabsTrigger>
+        <Tabs defaultValue="list" className="space-y-4">
+          <TabsList className="bg-card/50 backdrop-blur">
+            <TabsTrigger value="list">Triage List</TabsTrigger>
             <TabsTrigger value="hierarchy">Hierarchy View</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="table" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Campaign Performance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isMobile ? (
-                  /* Mobile Card View */
-                  <div className="space-y-3">
-                    {filteredCampaigns.map((campaign) => {
-                      const smartTags = getSmartTagsForCampaign(campaign);
-                      return (
-                        <Card 
-                          key={campaign.id} 
-                          className="p-4 cursor-pointer hover:bg-muted/50 transition-colors"
-                          onClick={() => handleCampaignClick(campaign.id)}
-                        >
-                          <div className="space-y-3">
-                            {/* Header with name, health score, and status */}
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h3 className="font-semibold text-base truncate">{campaign.name}</h3>
-                                  <CampaignHealthScore score={campaign.healthScore} size="sm" />
-                                </div>
-                                <CampaignSmartTags tags={smartTags} />
-                              </div>
-                              {getStatusBadge(campaign.status)}
-                            </div>
-                            
-                            {/* Sparkline */}
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <span>מגמת 7 ימים:</span>
-                              <CampaignSparkline 
-                                data={campaign.sparklineData} 
-                                trend={campaign.sparklineTrend}
-                                width={50}
-                                height={16}
-                              />
-                            </div>
-                            
-                            {/* Metrics grid */}
-                            <div className="grid grid-cols-3 gap-3 text-sm">
-                              <div>
-                                <p className="text-muted-foreground text-xs">Spent</p>
-                                <p className="font-medium">${campaign.spent.toLocaleString()}</p>
-                              </div>
-                              <div>
-                                <p className="text-muted-foreground text-xs">CTR</p>
-                                <p className="font-medium">{campaign.ctr.toFixed(2)}%</p>
-                              </div>
-                              <div>
-                                <p className="text-muted-foreground text-xs">ROAS</p>
-                                <p className="font-medium">{campaign.roas.toFixed(1)}x</p>
-                              </div>
-                            </div>
-
-                            {/* View details button */}
-                            <div className="flex items-center justify-end text-sm text-primary">
-                              <span>צפה בניתוח קהלים</span>
-                              <ChevronRight className="w-4 h-4" />
-                            </div>
-                          </div>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  /* Desktop Table View */
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Campaign</TableHead>
-                          <TableHead className="text-center">Health</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead className="text-right">Spent</TableHead>
-                          <TableHead className="text-right">ROAS</TableHead>
-                          <TableHead className="text-right">CTR</TableHead>
-                          <TableHead className="text-center">7-Day Trend</TableHead>
-                          <TableHead></TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredCampaigns.map((campaign) => {
-                          const smartTags = getSmartTagsForCampaign(campaign);
-                          return (
-                            <TableRow 
-                              key={campaign.id}
-                              className="cursor-pointer hover:bg-muted/50 transition-colors"
-                              onClick={() => handleCampaignClick(campaign.id)}
-                            >
-                              <TableCell>
-                                <div className="space-y-1">
-                                  <span className="font-medium">{campaign.name}</span>
-                                  <CampaignSmartTags tags={smartTags} />
-                                </div>
-                              </TableCell>
-                              <TableCell className="text-center">
-                                <CampaignHealthScore score={campaign.healthScore} />
-                              </TableCell>
-                              <TableCell>{getStatusBadge(campaign.status)}</TableCell>
-                              <TableCell className="text-right">${campaign.spent.toLocaleString()}</TableCell>
-                              <TableCell className="text-right font-medium">{campaign.roas.toFixed(1)}x</TableCell>
-                              <TableCell className="text-right">{campaign.ctr.toFixed(2)}%</TableCell>
-                              <TableCell className="text-center">
-                                <CampaignSparkline 
-                                  data={campaign.sparklineData} 
-                                  trend={campaign.sparklineTrend}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          <TabsContent value="list" className="space-y-3">
+            {isLoading ? (
+              <CampaignListSkeleton />
+            ) : filteredCampaigns.length > 0 ? (
+              filteredCampaigns.map((campaign) => {
+                const smartTags = getSmartTagsForCampaign(campaign);
+                return (
+                  <CampaignRow
+                    key={campaign.id}
+                    id={campaign.id}
+                    name={campaign.name}
+                    objective={campaign.objective}
+                    platform={campaign.platform}
+                    healthScore={campaign.healthScore}
+                    smartTags={smartTags}
+                    sparklineData={campaign.sparklineData}
+                    sparklineTrend={campaign.sparklineTrend}
+                  />
+                );
+              })
+            ) : (
+              <Card className="glass-card border-border/50">
+                <CardContent className="p-8 text-center">
+                  <p className="text-muted-foreground">No campaigns found matching your filters.</p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="hierarchy">
